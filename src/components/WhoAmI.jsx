@@ -7,12 +7,16 @@ import { useState, useCallback, useRef, useEffect } from "react";
 
 const C = {
   bg: "#F4ECDA",
-  espresso: "#4B351D",
-  red: "#9D3E22",
-  sun: "#D4A843",
-  denim: "#8FADBF",
-  olive: "#8F915F",
-  cream: "#F0E6D0",
+  espresso: "#572c19",
+  terracotta: "#9D3E22",
+  red: "#8b1a1c",
+  cocoa: "#69452d",
+  ocre: "#ca9633",
+  sun: "#e8bb66",
+  denim: "#85abb8",
+  ocean: "#708f92",
+  sage: "#abae99",
+  cream: "#f1d7bc",
   light: "#EDE4D2",
 };
 
@@ -34,9 +38,9 @@ const questions = [
     options: [
       { label: "SOUP,\nany kind of soup", value: "Warm soup", color: C.sun },
       { label: "Warm rice bowl\nwith any protein", value: "Rice bowl with protein", color: C.cream },
-      { label: "Lots of greens\nmake me feel better", value: "Lots of greens", color: C.cream },
-      { label: "Sweet dessert", value: "Sweet dessert", color: C.red },
-      { label: "As long as it's\nfrom my hometown", value: "Whatever's from my hometown", color: C.cream },
+      { label: "Lots of greens\nmake me feel better", value: "Lots of greens", color: C.sage },
+      { label: "Sweet dessert", value: "Sweet dessert", color: C.ocean },
+      { label: "As long as it's\nfrom my hometown", value: "Whatever's from my hometown", color: C.cocoa },
     ],
   },
   {
@@ -45,20 +49,20 @@ const questions = [
     options: [
       { label: "I'd prefer\nwarm tone", value: "Warm tones", img: "/images/warm-tone.png", color: "#B8704A" },
       { label: "A fashionista here!\nAlmost got all color", value: "A bit of everything", img: "/images/fashionista.png", color: C.sun },
-      { label: "love pastels", value: "Pastels", img: "/images/pastel.png", color: "#D4B8C4" },
-      { label: "black and white", value: "Mostly black & white", img: "/images/black-and-white.png", color: C.red },
-      { label: "cool tone make me\nlooks good!", value: "Cool tones", img: "/images/cool-tone.png", color: C.denim },
+      { label: "love pastels", value: "Pastels", img: "/images/pastel.png", color: C.denim },
+      { label: "black and white", value: "Mostly black & white", img: "/images/black-and-white.png", color: "#ffffff" },
+      { label: "cool tone make me\nlooks good!", value: "Cool tones", img: "/images/cool-tone.png", color: "#C2CCCF" },
     ],
   },
   {
     id: "comfort", question: "What makes you feel comfy?",
     layout: "card-row",
     options: [
-      { label: "Lo-fi music", value: "Lo-fi music", img: null, color: C.sun },
-      { label: "You wear your\nbest and fav outfit", value: "Wearing my favorite outfit", img: null, color: C.cream },
-      { label: "Subtle smell of\nfresh linen", value: "Fresh linen smell", img: null, color: C.denim },
-      { label: "Sounds of bird\nchirping and\nleaves hitting", value: "Nature sounds", img: null, color: C.red },
-      { label: "Aesthetic and\norganized table", value: "An organized space", img: null, color: "#B8945A" },
+      { label: "Lo-fi music", value: "Lo-fi music", img: "/images/Lofi-music.png", color: C.sun },
+      { label: "You wear your\nbest and fav outfit", value: "Wearing my favorite outfit", img: "/images/Fav-outfit.png", color: C.cream },
+      { label: "Subtle smell of\nfresh linen", value: "Fresh linen smell", img: "/images/Fresh-linen.png", color: C.denim },
+      { label: "Sounds of bird\nchirping and\nleaves hitting", value: "Nature sounds", img: "/images/Bird-chirping.png", color: C.red },
+      { label: "Aesthetic and\norganized table", value: "An organized space", img: "/images/Organize-table.png", color: "#B8945A" },
     ],
   },
   {
@@ -79,7 +83,7 @@ const questions = [
       { label: "exploring\nnew\nfood places", value: "Exploring new places", img: "/images/explore-food-place.png", color: C.red },
       { label: "staying home\nand\nresting", value: "Staying home", img: "/images/staying-home-rest.png", color: C.denim },
       { label: "do fun\ncreative\nactivity", value: "Creative activities", img: "/images/crafty-activity.png", color: C.sun },
-      { label: "explore\nnature", value: "Explore nature", img: "/images/explore-nature.png", color: C.olive },
+      { label: "explore\nnature", value: "Explore nature", img: "/images/explore-nature.png", color: C.sage },
       { label: "it changes\nall the time", value: "It changes all the time", img: "/images/changes-all-the-time.png", color: C.sun },
     ],
   },
@@ -328,13 +332,13 @@ function NavArrows({ onBack, onForward, showBack, showForward }) {
       {showBack && (
         <button onClick={onBack} style={{
           width:52, height:52, borderRadius:"50%", border:"none",
-          background:C.red, cursor:"pointer", display:"flex", alignItems:"center",
+          background:C.red, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
           justifyContent:"center", transition:"all 0.3s ease", position:"fixed",
-          bottom:24, left:40, zIndex:10,
+          bottom:-100, left:20, zIndex:10,
         }}
           onMouseEnter={e=>{e.currentTarget.style.background=C.espresso;e.currentTarget.style.transform="scale(1.08)";}}
           onMouseLeave={e=>{e.currentTarget.style.background=C.red;e.currentTarget.style.transform="scale(1)";}}>
-          <svg width="18" height="18" viewBox="0 0 16 16" fill={C.bg}>
+          <svg width="38" height="38" viewBox="0 0 18 16" fill={C.bg}>
             <path d="M11,2 L5,8 L11,14 Z"/>
           </svg>
         </button>
@@ -343,13 +347,13 @@ function NavArrows({ onBack, onForward, showBack, showForward }) {
       {showForward && (
         <button onClick={onForward} style={{
           width:52, height:52, borderRadius:"50%", border:`2px solid ${C.espresso}33`,
-          background:"none", cursor:"pointer", display:"flex", alignItems:"center",
+          background:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
           justifyContent:"center", transition:"all 0.3s ease", position:"fixed",
-          bottom:24, right:40, zIndex:10,
+          bottom:-100, right:20, zIndex:10,
         }}
           onMouseEnter={e=>{e.currentTarget.style.borderColor=C.olive;e.currentTarget.style.transform="scale(1.08)";}}
           onMouseLeave={e=>{e.currentTarget.style.borderColor=`${C.espresso}33`;e.currentTarget.style.transform="scale(1)";}}>
-          <svg width="18" height="18" viewBox="0 0 16 16" fill={C.olive}>
+          <svg width="38" height="38" viewBox="0 0 14 16" fill={C.sage}>
             <path d="M5,2 L11,8 L5,14 Z"/>
           </svg>
         </button>
@@ -408,9 +412,9 @@ function LayoutFoodSingle({ q, onAnswer, selected }) {
   const labelPositions = [
     { top:"41%", left:"17%", color:C.sun },
     { top:"41%", left:"42%", color:C.cream },
-    { top:"41%", left:"65%", color:C.cream },
-    { top:"81%", left:"25%", color:C.red },
-    { top:"81%", left:"54%", color:C.cream },
+    { top:"41%", left:"65%", color:C.sage },
+    { top:"81%", left:"25%", color:C.ocean },
+    { top:"81%", left:"54%", color:C.cocoa },
   ];
   return (
     <div style={{ position:"relative", maxWidth:700, margin:"0 auto" }}>
@@ -483,23 +487,23 @@ function LayoutScattered({ q, onAnswer, selected }) {
 /* Q4: Card Row */
 function LayoutCardRow({ q, onAnswer, selected }) {
   return (
-    <div style={{ display:"flex", gap:14, justifyContent:"center", flexWrap:"wrap" }}>
+    <div style={{ display:"flex", gap:14, justifyContent:"center", flexWrap:"nowrap" }}>
       {q.options.map((opt,i) => (
         <button key={i} onClick={()=>onAnswer(opt.value)}
           style={{
             background:"none", border: selected===opt.value ? `2.5px solid ${C.red}` : `1.5px solid ${C.espresso}33`,
-            cursor:"pointer", width:150, padding:0, display:"flex", flexDirection:"column",
+            cursor:"pointer", width:130, padding:0, display:"flex", flexDirection:"column", justifyContent:"space-between", height:210,
             transition:"all 0.3s ease", animation:`slideUp 0.5s ease ${i*80}ms both`,
             boxShadow: selected===opt.value ? `4px 4px 0 ${C.red}` : "none",
           }}
           onMouseEnter={e=>e.currentTarget.style.transform="translateY(-4px)"}
           onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
-          <div style={{ width:"100%", height:110, background:`${opt.color}22`, display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <div style={{ width:"100%", height:157, background:`${opt.color}22`, display:"flex", alignItems:"center", justifyContent:"center" }}>
             {opt.img ? <img src={opt.img} alt={opt.label} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> :
               <span style={{...mono(9),color:`${C.espresso}44`}}>[ img ]</span>}
           </div>
           <div style={{
-            ...mono(11), padding:"8px 6px", whiteSpace:"pre-line", textAlign:"center",
+            ...mono(11), padding:"4px 6px", whiteSpace:"pre-line", textAlign:"center",
             background: selected===opt.value ? C.red : `${opt.color}55`,
             color: selected===opt.value ? C.bg : C.espresso,
             width:"100%", lineHeight:1.3,
@@ -515,7 +519,7 @@ function LayoutCardRow({ q, onAnswer, selected }) {
 /* Q5: Toggle List with phone image */
 function LayoutToggleList({ q, onAnswer, selected }) {
   return (
-    <div style={{ display:"flex", gap:40, justifyContent:"center", alignItems:"center", flexWrap:"wrap" }}>
+    <div style={{ display:"flex", gap:26, justifyContent:"center", alignItems:"center", flexWrap:"wrap" }}>
       <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
         {q.options.map((opt,i) => (
           <button key={i} onClick={()=>onAnswer(opt.value)}
@@ -544,7 +548,7 @@ function LayoutToggleList({ q, onAnswer, selected }) {
       </div>
       <div style={{ flexShrink:0, maxWidth:200 }}>
         {q.sideImage ?
-          <img src={q.sideImage} alt="flip phone" style={{ width:500, height:"auto", display:"block" }}/> :
+          <img src={q.sideImage} alt="flip phone" style={{ width:200, height:"auto", display:"block" }}/> :
           <Img w={180} h={280} alt="phone"/>}
       </div>
     </div>
@@ -554,7 +558,7 @@ function LayoutToggleList({ q, onAnswer, selected }) {
 /* Q6: Folder Tabs with real images */
 function LayoutFolderTabs({ q, onAnswer, selected }) {
   return (
-    <div style={{ display:"flex", gap:10, justifyContent:"center", flexWrap:"nowrap", alignItems:"flex-end" }}>
+    <div style={{ display:"flex", gap:8, justifyContent:"center", flexWrap:"nowrap", alignItems:"flex-end", maxWidth:850, margin:"0 auto"}}>
       {q.options.map((opt,i) => (
         <button key={i} onClick={()=>onAnswer(opt.value)}
           style={{
@@ -565,20 +569,17 @@ function LayoutFolderTabs({ q, onAnswer, selected }) {
           onMouseEnter={e=>e.currentTarget.style.transform="translateY(-6px)"}
           onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
           <div style={{
-            width:150, height:150, borderRadius:"6px 6px 0 0",
-            border: selected===opt.value ? `2.5px solid ${C.red}` : `1.5px solid ${C.espresso}22`,
-            borderBottom:"none", background:`${opt.color}22`,
-          }}>
-            {opt.img ? <img src={opt.img} alt={opt.label} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> :
+            width:160, height:170, overflow:"hidden",borderRadius:"6px 6px 0 0", border: "none", background:"transparent"}}>
+            {opt.img ? <img src={opt.img} alt={opt.label} style={{ width:"100%", height:"100%", objectFit:"contain", objectPosition:"bottom" }}/> :
               <div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center"}}>
                 <span style={{...mono(9),color:`${C.espresso}44`}}>[ img ]</span>
               </div>}
           </div>
           <div style={{
-            ...mono(11), padding:"10px 8px", whiteSpace:"pre-line", textAlign:"center",
-            width:150, lineHeight:1.3,
+            ...mono(11), marginTop: 8,padding:"10px 8px", whiteSpace:"pre-line", textAlign:"center",
+            width:140, lineHeight:1.3,
             background: selected===opt.value ? C.red : opt.color,
-            color: selected===opt.value ? C.bg : C.espresso,
+            color: selected===opt.value ? C.bg : (opt.color === C.red ? C.bg : C.espresso),
             border:`1.5px solid ${C.espresso}22`, borderTop:"none",
           }}>
             {opt.label}
@@ -592,9 +593,9 @@ function LayoutFolderTabs({ q, onAnswer, selected }) {
 /* Q7: Hexagons with real images */
 function LayoutHexagons({ q, onAnswer, selected }) {
   const hexPositions = [
-    { x:0, y:0 }, { x:170, y:0 }, { x:340, y:0 },
-    { x:85, y:155 }, { x:255, y:155 },
-  ];
+    { x:-80, y:-10 }, { x:140, y:-10}, { x:357, y:-10 },
+    { x:33, y:165 }, { x:250, y:165 },
+];
   return (
     <div style={{ position:"relative", width:500, height:340, overflow:"visible", margin:"0 auto" }}>
       {q.options.map((opt,i) => {
@@ -602,7 +603,7 @@ function LayoutHexagons({ q, onAnswer, selected }) {
         return (
           <button key={i} onClick={()=>onAnswer(opt.value)}
             style={{
-              position:"absolute", left:hexPositions[i].x, top:hexPositions[i].y, width:160, height:150, padding:0, overflow:"hidden",
+              position:"absolute", left:hexPositions[i].x, top:hexPositions[i].y, width:230, height:230, padding:0, overflow:"hidden",
               background:C.bg,clipPath:"polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
               border:"none", cursor:"pointer", transition:"all 0.3s ease",
               animation:`slideUp 0.5s ease ${i*100}ms both`,
