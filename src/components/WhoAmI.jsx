@@ -102,11 +102,11 @@ const questions = [
     id: "seen", question: "How do you want to be seen?",
     layout: "label-scatter",
     options: [
-      { label: "DEPENDABLE", value: "Dependable", style: "nametag" },
-      { label: "KIND", value: "Kind", style: "stamp" },
-      { label: "calm", value: "Calm", style: "luggage" },
-      { label: "creative", value: "Creative", style: "tape" },
-      { label: "authentic", value: "Authentic", style: "ticket" },
+     { label: "DEPENDABLE", value: "Dependable", img: "/images/seen-dependable.png", w: 210 },
+     { label: "KIND", value: "Kind", img: "/images/seen-kind.png", w: 140 },
+     { label: "calm", value: "Calm", img: "/images/seen-calm.png", w: 200 },
+     { label: "creative", value: "Creative", img: "/images/seen-creative.png", w: 270 },
+     { label: "authentic", value: "Authentic", img: "/images/seen-authentic.png", w: 190 },
     ],
   },
 ];
@@ -137,175 +137,161 @@ const shapePools = {
 };
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 
-function renderAllisonFace(pal, gender, region) {
+/* ═══════════════════════════════════════════════
+   SUPER MINIMAL FACE RENDERER
+   
+   INSTRUCTIONS:
+   1. Open WhoAmI.jsx
+   2. Find the renderPlaceholderFace function
+   3. Delete the ENTIRE function
+   4. Paste this code in its place
+   5. Then find where it says: 
+   6. Replace with: renderFace(faceData.palette, faceData.gender, faceData.region)
+   7. Also find generateFaceData function and add region to the return
+   ═══════════════════════════════════════════════ */
+
+function renderFace(pal, gender, region) {
+  // Seed a simple random from region+gender combo so same input = same face per session
+  const r = () => Math.random();
   const s = gender === "feminine" ? 1 : gender === "masculine" ? -1 : 0;
 
-  /* ── HEAD SHAPES PER REGION ── */
-  const heads = {
+  /* ── HEAD SHAPES ── */
+  const headOptions = {
     "North America": [
-      // Wide square jaw
-      () => <rect x={-70-s*5} y={-80} width={140+s*10} height={160} rx={12+s*10} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
-      // Big round
-      () => <circle cx={0} cy={0} r={85+s*5} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
-      // Shield/wide
-      () => <path d={`M0,-90 Q${-80+s*5},-85 ${-85+s*8},-20 L${-75+s*5},60 Q${-40+s*5},95 0,100 Q${40-s*5},95 ${75-s*5},60 L${85-s*8},-20 Q${80-s*5},-85 0,-90 Z`} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
+      // Wide square
+      <rect x={-65-s*5} y={-75} width={130+s*10} height={155} rx={10+s*12} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
+      // Big circle
+      <circle cx={0} cy={0} r={80+s*5} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
+      // Wide rectangle
+      <rect x={-72-s*3} y={-70} width={144+s*6} height={145} rx={16+s*10} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
     ],
     "Middle East": [
       // Tall oval
-      () => <ellipse cx={0} cy={0} rx={65+s*5} ry={95} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
-      // Elongated
-      () => <path d={`M0,-95 Q${-60+s*5},-88 ${-65+s*5},-30 Q${-70+s*5},20 ${-55+s*5},70 Q-30,100 0,105 Q30,100 ${55-s*5},70 Q${70-s*5},20 ${65-s*5},-30 Q${60-s*5},-88 0,-95 Z`} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
-      // Diamond soft
-      () => <path d={`M0,-90 Q${-65+s*8},-50 ${-70+s*8},5 Q${-60+s*8},65 0,100 Q${60-s*8},65 ${70-s*8},5 Q${65-s*8},-50 0,-90 Z`} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
+      <ellipse cx={0} cy={0} rx={58+s*5} ry={88} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
+      // Elongated rectangle
+      <rect x={-55+s*3} y={-85} width={110-s*6} height={170} rx={40+s*5} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
+      // Narrow oval
+      <ellipse cx={0} cy={0} rx={52+s*5} ry={85} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
     ],
     "Asia Pacific": [
-      // Soft round
-      () => <circle cx={0} cy={5} r={82+s*3} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={2.5}/>,
-      // Gentle oval
-      () => <ellipse cx={0} cy={5} rx={72+s*5} ry={88} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={2.5}/>,
-      // Pear
-      () => <path d={`M0,-85 Q${-55+s*3},-82 -68,-30 Q-75,25 ${-55+s*5},70 Q-30,100 0,102 Q30,100 ${55-s*5},70 Q75,25 68,-30 Q${55-s*3},-82 0,-85 Z`} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={2.5}/>,
+      // Soft circle
+      <circle cx={0} cy={3} r={75+s*3} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={2.5}/>,
+      // Round oval
+      <ellipse cx={0} cy={3} rx={68+s*5} ry={78} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={2.5}/>,
+      // Slightly pear
+      <ellipse cx={0} cy={8} rx={70+s*3} ry={80} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={2.5}/>,
     ],
     "Europe": [
-      // Angular jaw
-      () => <path d={`M${-10-s*3},-90 L${-75+s*5},-75 L${-80+s*8},-10 L-70,50 Q${-50+s*8},92 -15,98 L15,98 Q${50-s*8},92 70,50 L${80-s*8},-10 L${75-s*5},-75 L${10+s*3},-90 Z`} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
-      // Rectangular
-      () => <rect x={-68+s*5} y={-88} width={136-s*10} height={186} rx={8+s*12} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
-      // Diamond sharp
-      () => <path d={`M0,-95 Q${-70+s*8},-60 ${-78+s*8},0 Q${-65+s*8},65 0,100 Q${65-s*8},65 ${78-s*8},0 Q${70-s*8},-60 0,-95 Z`} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
+      // Angular tall
+      <rect x={-58+s*5} y={-82} width={116-s*10} height={168} rx={6+s*10} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
+      // Sharp oval
+      <ellipse cx={0} cy={0} rx={62+s*3} ry={86} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
+      // Narrow rectangle
+      <rect x={-52+s*3} y={-80} width={104-s*6} height={165} rx={8+s*12} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>,
     ],
   };
 
-  /* ── HAIR PER REGION ── */
-  const hairs = {
+  /* ── HAIR ── */
+  const hairOptions = {
     "North America": [
-      // Flat top block
-      () => <g><rect x={-78} y={-110} width={156} height={45} rx={4} fill={pal.stroke}/><rect x={-74} y={-110} width={25} height={55} rx={3} fill={pal.stroke}/><rect x={49} y={-110} width={25} height={55} rx={3} fill={pal.stroke}/></g>,
-      // Buzz cut
-      () => <ellipse cx={0} cy={-65} rx={78} ry={32} fill={pal.stroke} opacity={0.85}/>,
-      // Side part
-      () => <path d="M-72,-30 Q-78,-75 -35,-95 Q0,-105 40,-95 Q78,-75 72,-25 L65,-45 Q50,-75 0,-82 Q-50,-72 -65,-42 Z" fill={pal.stroke}/>,
+      <rect x={-70} y={-100} width={140} height={40} rx={4} fill={pal.stroke}/>,
+      <ellipse cx={0} cy={-62} rx={72} ry={28} fill={pal.stroke}/>,
+      <path d="M-65,-28 Q-68,-70 -30,-88 Q0,-98 30,-88 Q68,-70 65,-28 L58,-42 Q45,-65 0,-72 Q-45,-65 -58,-42 Z" fill={pal.stroke}/>,
     ],
     "Middle East": [
-      // Draped covering
-      () => <g><path d="M-72,-50 Q-78,-88 -30,-100 Q0,-108 30,-100 Q78,-88 72,-50" fill={pal.primary[2]||pal.primary[0]} stroke={pal.stroke} strokeWidth={2}/><path d="M-72,-50 L-80,-10 Q-85,30 -72,50" fill={pal.primary[2]||pal.primary[0]} stroke={pal.stroke} strokeWidth={2}/><path d="M72,-50 L80,-10 Q85,30 72,50" fill={pal.primary[2]||pal.primary[0]} stroke={pal.stroke} strokeWidth={2}/></g>,
-      // Long flowing
-      () => <g><path d="M-68,-35 Q-72,-80 -35,-98 Q0,-108 35,-98 Q72,-80 68,-35" fill={pal.stroke}/><path d="M-68,-35 Q-72,15 -62,60 Q-58,80 -50,90" fill="none" stroke={pal.stroke} strokeWidth={7} strokeLinecap="round"/><path d="M68,-35 Q72,15 62,60 Q58,80 50,90" fill="none" stroke={pal.stroke} strokeWidth={7} strokeLinecap="round"/></g>,
-      // Covered ornate
-      () => <g><path d="M-70,-48 Q-75,-88 -30,-102 Q0,-110 30,-102 Q75,-88 70,-48" fill={pal.primary[0]} stroke={pal.stroke} strokeWidth={2}/><path d="M-70,-48 L-78,-8 Q-82,30 -68,50" fill={pal.primary[0]} stroke={pal.stroke} strokeWidth={2}/><path d="M70,-48 L78,-8 Q82,30 68,50" fill={pal.primary[0]} stroke={pal.stroke} strokeWidth={2}/><circle cx={0} cy={-70} r={4} fill={pal.accent[2]||pal.primary[2]}/></g>,
+      <g><path d="M-60,-45 Q-65,-82 -25,-95 Q0,-102 25,-95 Q65,-82 60,-45" fill={pal.stroke}/><path d="M-60,-45 Q-63,10 -55,50" fill="none" stroke={pal.stroke} strokeWidth={6} strokeLinecap="round"/><path d="M60,-45 Q63,10 55,50" fill="none" stroke={pal.stroke} strokeWidth={6} strokeLinecap="round"/></g>,
+      <g><path d="M-58,-42 Q-62,-78 -25,-92 Q0,-100 25,-92 Q62,-78 58,-42" fill={pal.primary[0]||pal.stroke} stroke={pal.stroke} strokeWidth={2}/><path d="M-58,-42 L-64,-5 Q-68,28 -55,48" fill={pal.primary[0]||pal.stroke} stroke={pal.stroke} strokeWidth={2}/><path d="M58,-42 L64,-5 Q68,28 55,48" fill={pal.primary[0]||pal.stroke} stroke={pal.stroke} strokeWidth={2}/></g>,
+      <path d="M-58,-35 Q-62,-75 -28,-90 Q0,-98 28,-90 Q62,-75 58,-35 L52,-48 Q40,-70 0,-78 Q-40,-70 -52,-48 Z" fill={pal.stroke}/>,
     ],
     "Asia Pacific": [
-      // Straight fringe
-      () => <g><path d="M-68,-25 Q-72,-70 -42,-92 Q0,-108 42,-92 Q72,-70 68,-25 L62,-42 Q50,-68 0,-78 Q-50,-68 -62,-42 Z" fill={pal.stroke}/><path d="M-45,-48 Q-40,-60 -28,-64 L-30,-44 Z" fill={pal.stroke}/><path d="M-10,-52 Q0,-66 10,-65 L6,-46 Z" fill={pal.stroke}/></g>,
-      // Neat bob
-      () => <g><path d="M-65,-28 Q-68,-72 -38,-92 Q0,-105 38,-92 Q68,-72 65,-28" fill={pal.stroke}/><path d="M-65,-28 Q-67,8 -60,35" fill="none" stroke={pal.stroke} strokeWidth={9} strokeLinecap="round"/><path d="M65,-28 Q67,8 60,35" fill="none" stroke={pal.stroke} strokeWidth={9} strokeLinecap="round"/></g>,
-      // Side swept
-      () => <path d="M-66,-25 Q-70,-68 -38,-90 Q0,-102 38,-90 Q70,-68 66,-25 L60,-40 Q48,-68 0,-78 Q-48,-66 -60,-38 Z" fill={pal.stroke}/>,
+      <g><path d="M-62,-22 Q-65,-62 -35,-82 Q0,-95 35,-82 Q65,-62 62,-22 L55,-38 Q42,-58 0,-66 Q-42,-58 -55,-38 Z" fill={pal.stroke}/><path d="M-38,-42 Q-32,-55 -20,-58 L-22,-40 Z" fill={pal.stroke}/><path d="M-5,-46 Q5,-60 15,-58 L10,-42 Z" fill={pal.stroke}/></g>,
+      <g><path d="M-58,-22 Q-62,-62 -32,-80 Q0,-92 32,-80 Q62,-62 58,-22" fill={pal.stroke}/><path d="M-58,-22 Q-60,8 -52,30" fill="none" stroke={pal.stroke} strokeWidth={8} strokeLinecap="round"/><path d="M58,-22 Q60,8 52,30" fill="none" stroke={pal.stroke} strokeWidth={8} strokeLinecap="round"/></g>,
+      <path d="M-60,-20 Q-64,-58 -32,-78 Q0,-88 32,-78 Q64,-58 60,-20 L54,-35 Q42,-55 0,-62 Q-42,-55 -54,-35 Z" fill={pal.stroke}/>,
     ],
     "Europe": [
-      // Swept back
-      () => <g><path d="M-65,-32 Q-70,-75 -30,-95 Q0,-105 35,-95 Q72,-75 66,-25 L60,-42 Q48,-72 0,-82 Q-48,-70 -58,-40 Z" fill={pal.primary[1]||pal.stroke} stroke={pal.stroke} strokeWidth={1.5}/></g>,
-      // Slicked
-      () => <path d="M-66,-28 Q-70,-78 -30,-96 Q0,-105 35,-96 Q72,-78 68,-28 L62,-42 Q48,-74 0,-84 Q-48,-72 -60,-40 Z" fill={pal.stroke}/>,
-      // Cropped clean
-      () => <path d="M-68,-24 Q-72,-70 -36,-92 Q0,-102 36,-92 Q72,-70 68,-24 L62,-40 Q48,-66 0,-76 Q-48,-66 -62,-40 Z" fill={pal.stroke}/>,
+      <path d="M-56,-25 Q-60,-68 -25,-88 Q0,-96 30,-88 Q62,-68 58,-22 L52,-38 Q40,-62 0,-72 Q-42,-60 -50,-36 Z" fill={pal.stroke}/>,
+      <path d="M-58,-22 Q-62,-65 -28,-85 Q0,-94 28,-85 Q62,-65 58,-22 L52,-38 Q40,-62 0,-70 Q-40,-62 -52,-38 Z" fill={pal.stroke}/>,
+      <g><path d="M-55,-25 Q-60,-65 -22,-85 Q0,-92 28,-85 Q62,-65 56,-18 L50,-35 Q38,-60 0,-68 Q-38,-58 -48,-32 Z" fill={pal.primary[1]||pal.stroke} stroke={pal.stroke} strokeWidth={1.5}/></g>,
     ],
   };
 
-  /* ── SHARED EYES (Allison Black style: simple, bold) ── */
-  const eyes = [
-    // Simple dots
-    (f) => <g><circle cx={0} cy={0} r={8} fill={pal.stroke}/><circle cx={3*f} cy={-3} r={3} fill="white"/></g>,
-    // Oval with dot
-    (f) => <g><ellipse cx={0} cy={0} rx={14} ry={10} fill="white" stroke={pal.stroke} strokeWidth={2.5}/><circle cx={2*f} cy={0} r={6} fill={pal.stroke}/><circle cx={4*f} cy={-2} r={2.5} fill="white"/></g>,
-    // Half circle (happy)
-    (f) => <g><path d="M-12,0 Q0,-16 12,0" fill="white" stroke={pal.stroke} strokeWidth={2.5}/><circle cx={1*f} cy={-4} r={5} fill={pal.stroke}/><circle cx={3*f} cy={-6} r={2} fill="white"/></g>,
-    // Wide open
-    (f) => <g><circle cx={0} cy={0} r={14} fill="white" stroke={pal.stroke} strokeWidth={2.5}/><circle cx={2*f} cy={-1} r={8} fill={pal.stroke}/><circle cx={4*f} cy={-3} r={3} fill="white"/></g>,
-    // Narrow line
-    (f) => <g><path d="M-12,2 Q0,-6 12,2 Q0,8 -12,2" fill="white" stroke={pal.stroke} strokeWidth={2}/><circle cx={1*f} cy={1} r={4.5} fill={pal.stroke}/><circle cx={3*f} cy={-1} r={1.8} fill="white"/></g>,
+  /* ── EYES: just dots ── */
+  const eyeOptions = [
+    { r: 7 },
+    { r: 5 },
+    { r: 9 },
+    { r: 6 },
   ];
 
-  /* ── SHARED EYEBROWS ── */
-  const brows = [
-    (f) => <path d={`M${-16*f},-2 Q0,-10 ${16*f},0`} stroke={pal.stroke} strokeWidth={4} strokeLinecap="round" fill="none"/>,
-    (f) => <path d={`M${-16*f},0 L${16*f},-2`} stroke={pal.stroke} strokeWidth={3.5} strokeLinecap="round"/>,
-    (f) => <path d={`M${-16*f},2 L${4*f},-6 L${16*f},-1`} stroke={pal.stroke} strokeWidth={3} strokeLinecap="round" fill="none"/>,
-    (f) => <path d={`M${-14*f},0 L${14*f},0`} stroke={pal.stroke} strokeWidth={2} strokeLinecap="round" opacity={0.6}/>,
-  ];
-
-  /* ── SHARED NOSES ── */
-  const noses = [
-    // Simple button
-    () => <ellipse cx={0} cy={0} rx={8} ry={6} fill={pal.skin[1]} stroke={pal.stroke} strokeWidth={1.5} opacity={0.7}/>,
-    // Triangle
-    () => <path d="M0,-8 L8,8 L-8,8 Z" fill={pal.skin[1]} stroke={pal.stroke} strokeWidth={1.5} opacity={0.6}/>,
-    // Line
-    () => <path d="M0,-10 L0,6 Q-6,10 -4,6" fill="none" stroke={pal.stroke} strokeWidth={2} strokeLinecap="round"/>,
-    // Dot
-    () => <circle cx={0} cy={0} r={5} fill={pal.skin[1]} stroke={pal.stroke} strokeWidth={1.5}/>,
-    // Broad
-    () => <path d="M-3,-8 L-8,6 Q-10,10 -4,8 L4,8 Q10,10 8,6 L3,-8" fill={pal.skin[1]} stroke={pal.stroke} strokeWidth={1.2} opacity={0.6}/>,
-  ];
-
-  /* ── SHARED MOUTHS (Allison Black: big smiles, expressive) ── */
-  const mouths = [
-    // Wide happy smile
-    () => <path d="M-22,0 Q0,22 22,0" fill={pal.primary[0]} stroke={pal.stroke} strokeWidth={2.5} opacity={0.8}/>,
-    // Big open grin
-    () => <g><path d="M-20,-2 Q0,20 20,-2" fill={pal.primary[0]} stroke={pal.stroke} strokeWidth={2.5}/><path d="M-14,2 L14,2" stroke="white" strokeWidth={2.5} opacity={0.5}/></g>,
+  /* ── MOUTH: just one curve ── */
+  const mouthOptions = [
+    // Happy smile
+    <path d="M-18,0 Q0,16 18,0" fill="none" stroke={pal.stroke} strokeWidth={3} strokeLinecap="round"/>,
+    // Wide grin
+    <path d="M-22,0 Q0,18 22,0" fill={pal.primary[0]} stroke={pal.stroke} strokeWidth={2.5} opacity={0.8}/>,
     // Small smile
-    () => <path d="M-10,0 Q0,8 10,0" fill="none" stroke={pal.stroke} strokeWidth={2.5} strokeLinecap="round"/>,
-    // Lipstick lips
-    () => <g><path d="M-12,-3 Q0,-8 12,-3" fill={pal.primary[0]} stroke={pal.stroke} strokeWidth={1.5} opacity={0.6}/><path d="M-12,-3 Q0,10 12,-3" fill={pal.primary[0]} stroke={pal.stroke} strokeWidth={1.5} opacity={0.7}/></g>,
+    <path d="M-10,0 Q0,8 10,0" fill="none" stroke={pal.stroke} strokeWidth={2.5} strokeLinecap="round"/>,
     // Straight
-    () => <path d="M-14,0 L14,0" stroke={pal.stroke} strokeWidth={2.5} strokeLinecap="round"/>,
+    <path d="M-12,0 L12,0" stroke={pal.stroke} strokeWidth={2.5} strokeLinecap="round"/>,
+    // Open happy
+    <g><path d="M-16,-2 Q0,14 16,-2" fill={pal.primary[0]} stroke={pal.stroke} strokeWidth={2.5}/><path d="M-10,1 L10,1" stroke="white" strokeWidth={2} opacity={0.4}/></g>,
   ];
 
-  /* ── SHARED CHEEKS ── */
-  const cheeks = [
-    // Blush circles
-    () => <g><circle cx={-48} cy={18} r={14} fill={pal.primary[0]} opacity={0.18}/><circle cx={48} cy={18} r={14} fill={pal.primary[0]} opacity={0.18}/></g>,
-    // Freckles
-    () => <g>{[-40,-32,-36,32,36,40].map((x,i)=><circle key={i} cx={x} cy={12+Math.sin(i)*5} r={2} fill={pal.skin[2]||pal.stroke} opacity={0.3}/>)}</g>,
-    // None
-    () => <g/>,
+  /* ── NOSE: tiny ── */
+  const noseOptions = [
+    <circle cx={0} cy={0} r={4} fill={pal.skin[1]} stroke={pal.stroke} strokeWidth={1.2}/>,
+    <path d="M0,-4 L5,4 L-5,4 Z" fill={pal.skin[1]} stroke={pal.stroke} strokeWidth={1} opacity={0.7}/>,
+    <ellipse cx={0} cy={0} rx={5} ry={3.5} fill={pal.skin[1]} stroke={pal.stroke} strokeWidth={1} opacity={0.6}/>,
+    <path d="M0,-5 L0,3" stroke={pal.stroke} strokeWidth={1.8} strokeLinecap="round" opacity={0.5}/>,
   ];
 
-  /* ── PICK RANDOM PARTS ── */
-  const regionHeads = heads[region] || heads["Asia Pacific"];
-  const regionHairs = hairs[region] || hairs["Asia Pacific"];
+  /* ── CHEEKS ── */
+  const cheekOptions = [
+    <g><circle cx={-42} cy={16} r={12} fill={pal.primary[0]} opacity={0.15}/><circle cx={42} cy={16} r={12} fill={pal.primary[0]} opacity={0.15}/></g>,
+    <g/>,
+    <g><circle cx={-38} cy={14} r={10} fill={pal.primary[0]} opacity={0.1}/><circle cx={38} cy={14} r={10} fill={pal.primary[0]} opacity={0.1}/></g>,
+  ];
 
-  const pickedHead = pick(regionHeads);
-  const pickedHair = pick(regionHairs);
-  const pickedEyeIdx = Math.floor(Math.random() * eyes.length);
-  const pickedBrowIdx = Math.floor(Math.random() * brows.length);
-  const pickedNose = pick(noses);
-  const pickedMouth = pick(mouths);
-  const pickedCheek = pick(cheeks);
+  /* ── PICK ── */
+  const pi = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+  const head = pi(headOptions[region] || headOptions["Asia Pacific"]);
+  const hair = pi(hairOptions[region] || hairOptions["Asia Pacific"]);
+  const eye = pi(eyeOptions);
+  const mouth = pi(mouthOptions);
+  const nose = pi(noseOptions);
+  const cheek = pi(cheekOptions);
 
   return (
     <g>
-      {/* Hair behind head */}
-      {pickedHair()}
+      {/* Hair behind */}
+      {hair}
       {/* Head */}
-      {pickedHead()}
+      {head}
       {/* Cheeks */}
-      {pickedCheek()}
-      {/* Eyebrows */}
-      <g transform="translate(-30,-38)">{brows[pickedBrowIdx](1)}</g>
-      <g transform="translate(30,-38)">{brows[pickedBrowIdx](-1)}</g>
-      {/* Eyes */}
-      <g transform="translate(-30,-18)">{eyes[pickedEyeIdx](1)}</g>
-      <g transform="translate(30,-18)">{eyes[pickedEyeIdx](-1)}</g>
+      {cheek}
+      {/* Eyes — just two dots */}
+      <circle cx={-28} cy={-15} r={eye.r} fill={pal.stroke}/>
+      <circle cx={28} cy={-15} r={eye.r} fill={pal.stroke}/>
+      {/* Tiny white highlights */}
+      <circle cx={-25} cy={-17} r={eye.r * 0.35} fill="white" opacity={0.7}/>
+      <circle cx={31} cy={-17} r={eye.r * 0.35} fill="white" opacity={0.7}/>
       {/* Nose */}
-      <g transform="translate(0,12)">{pickedNose()}</g>
+      <g transform="translate(0,10)">{nose}</g>
       {/* Mouth */}
-      <g transform="translate(0,42)">{pickedMouth()}</g>
+      <g transform="translate(0,35)">{mouth}</g>
     </g>
   );
 }
 
+function generateFaceData(answers) {
+  const region = answers[0] || "Asia Pacific";
+  const pal = palettes[region] || palettes["Asia Pacific"];
+  const pool = shapePools[region] || shapePools["Asia Pacific"];
+  const gender = inferGender(answers);
+  return { region: region, palette: pal, profile: pool, gender: gender,
+    genderLabel: gender==="feminine"?"soft, gentle, delicate":gender==="masculine"?"strong, bold, structured":"balanced, neutral, adaptable" };
+}
 
 /* ═══ COMPONENTS ═══ */
 
@@ -380,13 +366,7 @@ function Img({ src, w, h, alt, style: s = {} }) {
 function LayoutMapList({ q, onAnswer, selected }) {
   return (
     <div style={{ position:"relative", minHeight:400, display:"flex", flexDirection:"column", alignItems:"center" }}>
-      <svg viewBox="0 0 800 400" style={{ position:"absolute", inset:0, opacity:0.06, pointerEvents:"none" }}>
-        <path d="M100,200 Q150,150 200,180 Q250,140 300,160 Q350,120 400,150 Q450,130 500,160 Q550,140 600,170 Q650,150 700,180" fill="none" stroke={C.espresso} strokeWidth={2}/>
-        <path d="M120,250 Q180,220 240,240 Q300,210 360,230 Q420,200 480,220 Q540,210 600,230 Q660,220 720,240" fill="none" stroke={C.espresso} strokeWidth={1.5}/>
-        <ellipse cx={200} cy={180} rx={80} ry={60} fill="none" stroke={C.espresso} strokeWidth={1}/>
-        <ellipse cx={500} cy={200} rx={100} ry={70} fill="none" stroke={C.espresso} strokeWidth={1}/>
-      </svg>
-      <div style={{ display:"flex", flexDirection:"column", gap:16, alignItems:"center", zIndex:1, marginTop:20 }}>
+    <div style={{ display:"flex", flexDirection:"column", gap:16, alignItems:"center", zIndex:1, marginTop:20 }}>
         {q.options.map((opt,i) => (
           <button key={i} onClick={()=>onAnswer(opt.value)}
             style={{
@@ -626,32 +606,28 @@ function LayoutHexagons({ q, onAnswer, selected }) {
 
 /* Q8: Label Scatter */
 function LayoutLabelScatter({ q, onAnswer, selected }) {
-  const styles = {
-    nametag:(sel)=>({ background:sel?C.red:"#B82B2B", color:"white", padding:"20px 28px", border:"none", fontWeight:700, fontSize:14 }),
-    stamp:(sel)=>({ background:sel?C.red:C.espresso, color:C.sun, padding:"24px 30px", border:`4px double ${C.sun}`, fontSize:22, fontWeight:700, letterSpacing:"6px" }),
-    luggage:(sel)=>({ background:sel?C.red:C.denim, color:C.espresso, padding:"16px 28px", borderRadius:"50%/40%", border:"none", fontStyle:"italic", fontSize:18 }),
-    tape:(sel)=>({ background:sel?C.red:`${C.sun}88`, color:C.espresso, padding:"12px 32px", border:"none", fontStyle:"italic", fontSize:16, transform:"rotate(-3deg)" }),
-    ticket:(sel)=>({ background:sel?C.red:C.cream, color:sel?C.bg:C.espresso, padding:"14px 24px", border:`2px dashed ${sel?C.bg:C.red}`, fontSize:14 }),
-  };
   const positions = [
-    { top:0, left:"5%" }, { top:-10, left:"35%" }, { top:10, left:"68%" },
-    { top:130, left:"15%" }, { top:140, left:"55%" },
+    { top:0, left:"3%" }, { top:-17, left:"39%" }, { top:10, left:"65%" },
+    { top:168, left:"12%" }, { top:160, left:"58%" },
   ];
   return (
-    <div style={{ position:"relative", minHeight:280, maxWidth:650, margin:"0 auto", width:"100%" }}>
+    <div style={{ position:"relative", minHeight:320, maxWidth:700, margin:"0 auto", width:"100%" }}>
       {q.options.map((opt,i) => {
         const sel = selected===opt.value;
         return (
           <button key={i} onClick={()=>onAnswer(opt.value)}
             style={{
-              ...mono(14), position:"absolute", top:positions[i].top+20, left:positions[i].left,
-              cursor:"pointer", transition:"all 0.3s ease",
+              position:"absolute", top:positions[i].top+20, left:positions[i].left,
+              background:"none", border:"none", cursor:"pointer", padding:0,
+              transition:"all 0.3s ease",
               animation:`slideUp 0.5s ease ${i*100}ms both`,
-              ...styles[opt.style](sel),
+              transform: sel ? "scale(1.1)" : "scale(1)",
+              filter: sel ? "brightness(0.9)" : "brightness(1)",
             }}
-            onMouseEnter={e=>e.currentTarget.style.transform=`${opt.style==="tape"?"rotate(-3deg) ":""}scale(1.08)`}
-            onMouseLeave={e=>e.currentTarget.style.transform=opt.style==="tape"?"rotate(-3deg)":""}>
-            {opt.label}
+            onMouseEnter={e=>e.currentTarget.style.transform="scale(1.08)"}
+            onMouseLeave={e=>e.currentTarget.style.transform=sel?"scale(1.1)":"scale(1)"}>
+            <img src={opt.img} alt={opt.label} style={{ width:opt.w||160, height:"auto", display:"block" }}/>
+            {sel && <div style={{ position:"absolute", inset:0, border:`3px solid ${C.red}`, borderRadius:4, pointerEvents:"none" }}/>}
           </button>
         );
       })}
@@ -682,7 +658,34 @@ export default function WhoAmI() {
   const [faceData,setFaceData] = useState(null);
   const [showAssumptions,setShowAssumptions] = useState(false);
   const [waitLine2,setWaitLine2] = useState(false);
+  const [showStats,setShowStats] = useState(false);
+  const [allResponses,setAllResponses] = useState([]);
   const svgRef = useRef(null);
+  // Load saved responses on mount
+useEffect(() => {
+  try {
+    const saved = JSON.parse(localStorage.getItem("howYouSeeMe_responses") || "[]");
+    setAllResponses(saved);
+  } catch(e) {}
+}, []);
+
+// Save a response
+const saveResponse = (didRebuild) => {
+  const response = {
+    id: Date.now(),
+    timestamp: new Date().toISOString(),
+    region: faceData.region,
+    gender: faceData.gender,
+    genderLabel: faceData.genderLabel,
+    label: faceData.profile.label,
+    answers: answers,
+    didRebuild: didRebuild,
+  };
+  const updated = [...allResponses, response];
+  setAllResponses(updated);
+  localStorage.setItem("howYouSeeMe_responses", JSON.stringify(updated));
+  return response;
+};
 
   const handleAnswer = val => { const na=[...answers]; na[currentQ]=val; setAnswers(na); };
 
@@ -710,25 +713,26 @@ export default function WhoAmI() {
 
       {/* ═══ INTRO ═══ */}
       {stage==="intro" && (
-        <div style={{ textAlign:"center", maxWidth:700, animation:"slideUp 0.8s cubic-bezier(0.16,1,0.3,1) both", zIndex:1, border:`3px solid ${C.espresso}`, padding:"60px 40px", background:C.bg, position:"relative" }}>
-          <p style={{...mono(12), letterSpacing:"4px", textTransform:"uppercase", color:C.espresso, marginBottom:36, opacity:0.7 }}>
+        <div style={{ textAlign:"center", maxWidth:700, animation:"slideUp 0.8s cubic-bezier(0.16,1,0.3,1) both", zIndex:1, padding:"40px 20px", background:C.bg, position:"relative" }}>
+          <p style={{...mono(12), letterSpacing:"4px", textTransform:"uppercase", color:C.espresso, marginBottom:20, opacity:0.7 }}>
             An interactive exploration
           </p>
-          <div style={{ position:"relative", marginBottom:20, lineHeight:0.85 }}>
-            <div style={{...display("clamp(36px,6vw,52px)"), marginBottom:4 }}>HOW YOU</div>
-            <div style={{ position:"relative", display:"inline-block" }}>
-              <div style={{...display("clamp(72px,14vw,120px)"), color:`${C.red}44`, position:"absolute", left:6, top:6, zIndex:0 }}>SEE</div>
-              <div style={{...display("clamp(72px,14vw,120px)"), color:C.red, position:"relative", zIndex:1 }}>SEE</div>
-            </div>
-            <div style={{ position:"relative", display:"inline-block", marginLeft:8 }}>
-              <div style={{...display("clamp(72px,14vw,120px)"), color:`${C.red}44`, position:"absolute", left:6, top:6, zIndex:0 }}>ME?</div>
-              <div style={{...display("clamp(72px,14vw,120px)"), color:C.red, position:"relative", zIndex:1 }}>ME?</div>
+          <div style={{ position:"relative", marginBottom:20, textAlign:"left", display:"inline-block" }}>
+           <div style={{...display("clamp(38px, 6vw,52px)"), marginBottom:-26 }}>HOW YOU</div>
+           <div style={{ position:"relative", marginBottom:-35 }}>
+             <div style={{...display("clamp(80px,16vw,130px)"), color:`${C.denim}100`, position:"absolute", left:5, top:5, zIndex:0 }}>SEE</div>
+             <div style={{...display("clamp(80px,16vw,130px)"), color:C.terracotta, position:"relative", zIndex:1, WebkitTextStroke:`2px ${C.espresso}`}}>SEE</div>
+             </div>
+             <div style={{ position:"relative", display:"flex", alignItems:"baseline" }}>
+              <span style={{...display("clamp(80px,16vw,130px)"), color:"#85ABB8", WebkitTextStroke:`2px ${C.espresso}` }}>M</span>
+              <span style={{...display("clamp(80px,16vw,130px)"), color:"#85ABB8", WebkitTextStroke:`2px ${C.espresso}` }}>E</span>
+              <span style={{...display("clamp(80px,16vw,130px)"), color:C.sun, WebkitTextStroke:`2px ${C.espresso}` }}>?</span>
             </div>
           </div>
-          <p style={{...mono(14), color:C.espresso, marginBottom:8, opacity:0.7 }}>
+          <p style={{...mono(16), color:C.espresso, marginBottom:20, opacity:0.7 }}>
             Answer 8 simple questions. The system will generate a face for you.
           </p>
-          <p style={{...display(18), color:C.red, marginBottom:40, fontStyle:"italic" }}>
+          <p style={{...mono(20), color:C.red, marginBottom:40, fontStyle:"normal" }}>
             But whose version of you is it?
           </p>
           <button onClick={()=>setStage("quiz")}
@@ -737,7 +741,7 @@ export default function WhoAmI() {
             onMouseLeave={e=>{e.currentTarget.style.background="none";e.currentTarget.style.color=C.espresso;}}>
             START!
           </button>
-          <div style={{ position:"absolute", bottom:-3, right:-3, width:"100%", height:"100%", border:`3px solid ${C.espresso}`, zIndex:-1 }}/>
+
         </div>
       )}
 
@@ -780,7 +784,7 @@ export default function WhoAmI() {
           <p style={{...mono(13), color:C.red, marginBottom:28 }}>+ {faceData.genderLabel}</p>
           <div style={{ border:`2px solid ${C.espresso}22`, padding:20, margin:"0 auto 28px", maxWidth:360, background:faceData.palette.bg }}>
             <svg ref={svgRef} viewBox="-120 -130 240 260" style={{ width:"100%", maxWidth:320, height:"auto" }}>
-             {renderAllisonFace(faceData.palette, faceData.gender, faceData.region)}
+             {renderFace(faceData.palette, faceData.gender, faceData.region)}
             </svg>
             <p style={{...mono(10), color:C.olive, marginTop:8 }}>[ your illustrations will go here ]</p>
           </div>
@@ -795,11 +799,17 @@ export default function WhoAmI() {
                 </p>)}
               <div style={{ marginTop:36 }}>
                 <p style={{...display(20), color:C.espresso, marginBottom:24 }}>This isn't you. Take the pieces back.</p>
-                <button onClick={()=>{setShowAssumptions(false);setStage("reassemble");}}
+                <button onClick={()=>{saveResponse(true);setShowAssumptions(false);setStage("reassemble");}}
                   style={{...mono(14), letterSpacing:"2px", textTransform:"uppercase", background:C.red, color:C.bg, border:"none", padding:"16px 44px", cursor:"pointer", transition:"all 0.3s ease" }}
                   onMouseEnter={e=>e.currentTarget.style.background=C.espresso}
                   onMouseLeave={e=>e.currentTarget.style.background=C.red}>
                   Rebuild yourself
+                </button>
+                <button onClick={()=>{saveResponse(false);startOver();}}
+                 style={{...mono(14), letterSpacing:"2px", textTransform:"uppercase", background:"none", color:C.espresso, border:`2px solid ${C.espresso}`, padding:"16px 44px", cursor:"pointer", transition:"all 0.3s ease", marginLeft:12 }}
+                 onMouseEnter={e=>{e.currentTarget.style.background=C.espresso;e.currentTarget.style.color=C.bg;}}
+                 onMouseLeave={e=>{e.currentTarget.style.background="none";e.currentTarget.style.color=C.espresso;}}>
+                 Accept this face
                 </button>
               </div>
             </div>)}
@@ -829,8 +839,37 @@ export default function WhoAmI() {
       )}
 
       {stage!=="intro"&&stage!=="generating"&&(
-        <p style={{ position:"fixed", bottom:16, ...mono(9), letterSpacing:"2px", color:C.olive, textTransform:"uppercase", zIndex:1, opacity:0.5 }}>Mega Mario — MADE 25/26</p>
+        <p style={{ position:"fixed", bottom:16, ...mono(9), letterSpacing:"2px", color:C.olive, textTransform:"uppercase", zIndex:1, opacity:0.5 }}>Mega Mario</p>
       )}
+{/* ═══ STATS BUTTON ═══ */}
+{stage==="intro" && (
+  <button onClick={()=>setShowStats(!showStats)}
+    style={{position:"fixed", top:16, right:16, ...mono(10), background:"none", border:`1px solid ${C.espresso}33`, padding:"8px 16px", cursor:"pointer", color:C.espresso, opacity:0.5, zIndex:10}}>
+    {allResponses.length} responses
+  </button>
+)}
+
+{/* ═══ STATS PANEL ═══ */}
+{showStats && (
+  <div style={{position:"fixed", inset:0, background:`${C.bg}ee`, zIndex:100, overflow:"auto", padding:40, display:"flex", flexDirection:"column", alignItems:"center"}}>
+    <button onClick={()=>setShowStats(false)} style={{position:"fixed", top:16, right:16, ...mono(14), background:"none", border:"none", cursor:"pointer", color:C.espresso}}>✕ Close</button>
+    <h2 style={{...display(32), marginBottom:8}}>Response Wall</h2>
+    <p style={{...mono(14), color:C.espresso, marginBottom:8}}>{allResponses.length} people were profiled.</p>
+    <p style={{...mono(14), color:C.red, marginBottom:32}}>
+      {allResponses.filter(r=>r.didRebuild).length} chose to rebuild. {allResponses.filter(r=>!r.didRebuild).length} accepted the system's face.
+    </p>
+    <div style={{display:"flex", flexWrap:"wrap", gap:16, justifyContent:"center", maxWidth:900}}>
+      {allResponses.map((r,i) => (
+        <div key={r.id} style={{border:`1.5px solid ${r.didRebuild ? C.red : C.espresso}33`, padding:12, width:160, textAlign:"center", background:r.didRebuild ? `${C.red}08` : `${C.espresso}05`}}>
+          <p style={{...mono(10), color:C.espresso, marginBottom:4}}>{r.region}</p>
+          <p style={{...display(12), marginBottom:4}}>"{r.label}"</p>
+          <p style={{...mono(9), color:r.didRebuild ? C.red : C.sage}}>{r.didRebuild ? "REBUILT" : "ACCEPTED"}</p>
+          <p style={{...mono(8), color:C.espresso, opacity:0.4, marginTop:4}}>{r.gender}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
       <style>{`
         @keyframes slideUp{from{opacity:0;transform:translateY(40px) scale(0.97);}to{opacity:1;transform:translateY(0) scale(1);}}

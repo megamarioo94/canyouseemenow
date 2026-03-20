@@ -131,35 +131,24 @@ const shapePools = {
   "Asia Pacific":{label:"quiet, soft, agreeable",assumptions:["Soft features, soft colors","You must be quiet and polite","Probably good at math too"]},
   "Europe":{label:"refined, structured, composed",assumptions:["Cool tones — very sophisticated","Structured and analytical","Naturally authoritative"]},
 };
-function pick(a){return a[Math.floor(Math.random()*a.length)];}
-
-function renderPlaceholderFace(pal, gender) {
-  const s = gender === "feminine" ? 1 : gender === "masculine" ? -1 : 0;
+function renderFace(pal, gender, region) {
   return (
     <g>
-      <ellipse cx={0} cy={0} rx={80+s*5} ry={95-s*3} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={2.5}/>
-      <ellipse cx={-28} cy={-15} rx={14+s*2} ry={10} fill="white" stroke={pal.stroke} strokeWidth={2}/>
-      <circle cx={-26} cy={-15} r={6} fill={pal.stroke}/><circle cx={-24} cy={-17} r={2} fill="white"/>
-      <ellipse cx={28} cy={-15} rx={14+s*2} ry={10} fill="white" stroke={pal.stroke} strokeWidth={2}/>
-      <circle cx={30} cy={-15} r={6} fill={pal.stroke}/><circle cx={32} cy={-17} r={2} fill="white"/>
-      <path d="M-40,-30 Q-28,-38 -16,-30" fill="none" stroke={pal.stroke} strokeWidth={3.5} strokeLinecap="round"/>
-      <path d="M16,-30 Q28,-38 40,-30" fill="none" stroke={pal.stroke} strokeWidth={3.5} strokeLinecap="round"/>
-      <path d="M0,-5 Q5,8 0,12 Q-5,8 0,-5" fill={pal.skin[1]} stroke={pal.stroke} strokeWidth={1.2} opacity={0.7}/>
-      <path d={`M-18,30 Q0,${42+s*4} 18,30`} fill={pal.primary[0]} stroke={pal.stroke} strokeWidth={2} opacity={0.7}/>
-      <circle cx={-50} cy={15} r={14} fill={pal.primary[0]} opacity={0.12}/>
-      <circle cx={50} cy={15} r={14} fill={pal.primary[0]} opacity={0.12}/>
-      <path d="M-75,-40 Q-80,-85 -40,-100 Q0,-112 40,-100 Q80,-85 75,-40 L70,-55 Q55,-80 0,-90 Q-55,-80 -70,-55 Z" fill={pal.stroke}/>
+      <circle cx={0} cy={0} r={80} fill={pal.skin[0]} stroke={pal.stroke} strokeWidth={3}/>
+      <circle cx={-25} cy={-15} r={7} fill={pal.stroke}/>
+      <circle cx={25} cy={-15} r={7} fill={pal.stroke}/>
+      <path d="M-15,25 Q0,40 15,25" fill="none" stroke={pal.stroke} strokeWidth={3}/>
     </g>
   );
 }
 
 function generateFaceData(answers) {
-  const region = answers[0];
-  const pal = palettes[region];
-  const pool = shapePools[region];
-  const gender = inferGender(answers);
-  return { region, palette: pal, profile: pool, gender,
-    genderLabel: gender==="feminine"?"soft, gentle, delicate":gender==="masculine"?"strong, bold, structured":"balanced, neutral, adaptable" };
+  const region = answers[0] || "Asia Pacific";
+  const pal = palettes[region] || palettes["Asia Pacific"];
+  const pool = shapePools[region] || shapePools["Asia Pacific"];
+  const gender = "neutral";
+  return { region: region, palette: pal, profile: pool, gender: gender,
+    genderLabel: "balanced, neutral, adaptable" };
 }
 
 /* ═══ COMPONENTS ═══ */
@@ -548,11 +537,17 @@ export default function WhoAmI() {
     if(currentQ<questions.length-1) setCurrentQ(currentQ+1);
     else {
       setStage("generating"); setWaitLine2(false);
-      setTimeout(()=>setWaitLine2(true),1800);
       setTimeout(()=>{
-        const d=generateFaceData(answers); setFaceData(d);
-        setStage("reveal"); setTimeout(()=>setShowAssumptions(true),1200);
-      },4000);
+  try {
+    const d=generateFaceData(answers); 
+    setFaceData(d);
+    setStage("reveal"); 
+    setTimeout(()=>setShowAssumptions(true),1200);
+  } catch(e) {
+    alert("Error: " + e.message);
+    setStage("intro");
+  }
+},4000);
     }
   };
   const goBack = () => { if(currentQ>0) setCurrentQ(currentQ-1); };
@@ -637,7 +632,7 @@ export default function WhoAmI() {
           <p style={{...mono(13), color:C.red, marginBottom:28 }}>+ {faceData.genderLabel}</p>
           <div style={{ border:`2px solid ${C.espresso}22`, padding:20, margin:"0 auto 28px", maxWidth:360, background:faceData.palette.bg }}>
             <svg ref={svgRef} viewBox="-120 -130 240 260" style={{ width:"100%", maxWidth:320, height:"auto" }}>
-              {renderPlaceholderFace(faceData.palette, faceData.gender)}
+              {renderFace(faceData.palette, faceData.gender, faceData.region)}
             </svg>
             <p style={{...mono(10), color:C.olive, marginTop:8 }}>[ your illustrations will go here ]</p>
           </div>
