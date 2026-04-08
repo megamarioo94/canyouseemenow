@@ -613,7 +613,7 @@ export default function WhoAmI() {
   // ═══ Google Sheets Integration ═══
   // INSTRUCTIONS: Create a Google Sheet, go to Extensions > Apps Script,
   // paste the script from google-sheets-script.gs, deploy as web app, paste URL below.
-  const SHEETS_URL = ""; // ← paste your Google Apps Script URL here
+  const SHEETS_URL = "https://script.google.com/a/macros/mylasalle.edu.sg/s/AKfycbwjJKDZV3Ep5dY7Z1glucO6o5BIM-3e70NzAEv5gc4gmiToaQ_JFMTIixNpfZJpiO7E/exec"; // ← paste your Google Apps Script URL here
 
   const sendToSheets = async (data) => {
     if (!SHEETS_URL) return;
