@@ -122,6 +122,59 @@ const genderSignals = {
 };
 function inferGender(ans){let s=0;const m={};questions.forEach((q,i)=>{m[q.id]=ans[i];});["food","wardrobe","comfort","freetime","visual","seen"].forEach(k=>{if(m[k]&&genderSignals[k]?.[m[k]]!==undefined)s+=genderSignals[k][m[k]];});return s>0.5?"feminine":s<-0.5?"masculine":"neutral";}
 
+/* ═══ FACE SCORING: Form (soft↔sharp) × Expression (warm↔cool) ═══ */
+const formScores = {
+  "Warm soup":0.5,"Rice bowl with protein":0,"Lots of greens":-0.3,"Sweet dessert":1.0,"Whatever's from my hometown":0,
+  "Warm tones":0.3,"A bit of everything":0.3,"Pastels":1.0,"Mostly black & white":-1.0,"Cool tones":-0.5,
+  "Lo-fi music":0.3,"Wearing my favorite outfit":-0.3,"Fresh linen smell":0.5,"Nature sounds":0.5,"An organized space":-0.8,
+  "Early morning":-0.3,"Late at night":-0.3,"Afternoon":0.3,"Depends on the day":0,
+  "Exploring new places":-0.3,"Staying home":0.5,"Creative activities":0.3,"Explore nature":0.3,"It changes all the time":0,
+  "Warm & textured":0.5,"Colorful & expressive":0.3,"Clean & minimal":-1.0,"A mix of styles":0.5,"Dark & moody":-0.8,
+  "Dependable":-0.3,"Kind":0.5,"Calm":0.3,"Creative":0.3,"Authentic":0,
+};
+const exprScores = {
+  "Warm soup":1.0,"Rice bowl with protein":0.3,"Lots of greens":0,"Sweet dessert":0.5,"Whatever's from my hometown":0.5,
+  "Warm tones":0.8,"A bit of everything":0.3,"Pastels":0.3,"Mostly black & white":-0.8,"Cool tones":-0.5,
+  "Lo-fi music":0.3,"Wearing my favorite outfit":0.5,"Fresh linen smell":-0.3,"Nature sounds":0.3,"An organized space":-0.5,
+  "Early morning":0.3,"Late at night":-0.5,"Afternoon":0.3,"Depends on the day":0,
+  "Exploring new places":0.8,"Staying home":-0.3,"Creative activities":0.5,"Explore nature":0.3,"It changes all the time":0.3,
+  "Warm & textured":0.8,"Colorful & expressive":1.0,"Clean & minimal":-0.5,"A mix of styles":0.3,"Dark & moody":-1.0,
+  "Dependable":0.3,"Kind":1.0,"Calm":-0.5,"Creative":0.5,"Authentic":0.3,
+};
+
+function scoreFace(answers) {
+  let form = 0, expr = 0;
+  for (let i = 1; i < answers.length; i++) {
+    const val = answers[i];
+    if (val) { form += formScores[val] || 0; expr += exprScores[val] || 0; }
+  }
+  return { form, expr };
+}
+
+function selectParts(form, expr) {
+  const fZone = form > 0.8 ? "soft" : form < -0.8 ? "sharp" : "mid";
+  const eZone = expr > 0.8 ? "warm" : expr < -0.8 ? "cool" : "neutral";
+  const key = `${fZone}-${eZone}`;
+
+  const eyeMap = {
+    "soft-warm":"eyes-3.png","soft-neutral":"eyes-1.png","soft-cool":"eyes-1.png",
+    "mid-warm":"eyes-2.png","mid-neutral":"eyes-8.png","mid-cool":"eyes-6.png",
+    "sharp-warm":"eyes-2.png","sharp-neutral":"eyes-5.png","sharp-cool":"eyes-5.png",
+  };
+  const noseMap = {
+    "soft-warm":"nose-1.png","soft-neutral":"nose-1.png","soft-cool":"nose-8.png",
+    "mid-warm":"nose-6.png","mid-neutral":"nose-6.png","mid-cool":"nose-3.png",
+    "sharp-warm":"nose-5.png","sharp-neutral":"nose-7.png","sharp-cool":"nose-3.png",
+  };
+  const mouthMap = {
+    "soft-warm":"mouth-6.png","soft-neutral":"mouth-2.png","soft-cool":"mouth-1.png",
+    "mid-warm":"mouth-7.png","mid-neutral":"mouth-3.png","mid-cool":"mouth-4.png",
+    "sharp-warm":"mouth-8.png","sharp-neutral":"mouth-5.png","sharp-cool":"mouth-5.png",
+  };
+
+  return { eyes: eyeMap[key], nose: noseMap[key], mouth: mouthMap[key] };
+}
+
 /* ═══ FACE DATA ═══ */
 const palettes = {
   "North America":{skin:["#F4C89A","#E8B078","#D4956A"],primary:["#D45B5B","#3B6FD4","#E8C83B"],accent:["#FFF","#1A1A2E","#FF6B35"],bg:"#FFF8F0",stroke:"#1A1A2E"},
@@ -150,28 +203,23 @@ function pick(a){return a[Math.floor(Math.random()*a.length)];}
    7. Also find generateFaceData function and add region to the return
    ═══════════════════════════════════════════════ */
 
-function renderFace(pal, gender, region) {
-  const regionCode = {"North America":"na","Middle East":"me","Asia Pacific":"ap","Europe":"eu"}[region] || "ap";
+function renderFace(faceData) {
+  const rc = {"North America":"na","Middle East":"me","Asia Pacific":"ap","Europe":"eu"}[faceData.region] || "ap";
   const headNum = Math.random() > 0.5 ? 1 : 2;
   const hairNum = Math.random() > 0.5 ? 1 : 2;
-  const eyeNum = Math.floor(Math.random() * 8) + 1;
-  const mouthNum = Math.floor(Math.random() * 8) + 1;
-  const noseNum = Math.floor(Math.random() * 8) + 1;
-
   const base = "/images/faces/";
-  const parts = [
-    `hair-${regionCode}-${hairNum}.png`,
-    `head-${regionCode}-${headNum}.png`,
-    `eyes-${eyeNum}.png`,
-    `nose-${noseNum}.png`,
-    `mouth-${mouthNum}.png`,
-  ];
+  const p = faceData.parts;
 
+  // Head & hair at full size; features scaled down to 50% centered
   return (
     <g>
-      {parts.map((file, i) => (
-        <image key={i} href={`${base}${file}`} x={0} y={0} width={500} height={500} />
-      ))}
+      <image href={`${base}hair-${rc}-${hairNum}.png`} x={0} y={0} width={500} height={500} />
+      <image href={`${base}head-${rc}-${headNum}.png`} x={0} y={0} width={500} height={500} />
+      <g style={{ transformOrigin:"250px 250px", transform:"scale(0.7)" }}>
+        <image href={`${base}${p.eyes}`} x={0} y={0} width={500} height={500} />
+        <image href={`${base}${p.nose}`} x={0} y={0} width={500} height={500} />
+        <image href={`${base}${p.mouth}`} x={0} y={0} width={500} height={500} />
+      </g>
     </g>
   );
 }
@@ -181,7 +229,9 @@ function generateFaceData(answers) {
   const pal = palettes[region] || palettes["Asia Pacific"];
   const pool = shapePools[region] || shapePools["Asia Pacific"];
   const gender = inferGender(answers);
-  return { region: region, palette: pal, profile: pool, gender: gender,
+  const { form, expr } = scoreFace(answers);
+  const parts = selectParts(form, expr);
+  return { region, palette: pal, profile: pool, gender, parts,
     genderLabel: gender==="feminine"?"soft, gentle, delicate":gender==="masculine"?"strong, bold, structured":"balanced, neutral, adaptable" };
 }
 
@@ -552,7 +602,29 @@ export default function WhoAmI() {
   const [waitLine2,setWaitLine2] = useState(false);
   const [showStats,setShowStats] = useState(false);
   const [allResponses,setAllResponses] = useState([]);
+  const [rebuiltParts,setRebuiltParts] = useState({ head:null, hair:null, eyes:null, nose:null, mouth:null });
+  const [selectedPart,setSelectedPart] = useState(null); // { type:"eyes", file:"eyes-3.png" }
+  const [showCompare,setShowCompare] = useState(false);
+  const [feedbackEmoji,setFeedbackEmoji] = useState(null);
+  const [feedbackText,setFeedbackText] = useState("");
   const svgRef = useRef(null);
+  const compareRef = useRef(null);
+
+  // ═══ Google Sheets Integration ═══
+  // INSTRUCTIONS: Create a Google Sheet, go to Extensions > Apps Script,
+  // paste the script from google-sheets-script.gs, deploy as web app, paste URL below.
+  const SHEETS_URL = ""; // ← paste your Google Apps Script URL here
+
+  const sendToSheets = async (data) => {
+    if (!SHEETS_URL) return;
+    try {
+      await fetch(SHEETS_URL, {
+        method: "POST", mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+    } catch(e) { console.log("Sheets sync failed:", e); }
+  };
   // Load saved responses on mount
 useEffect(() => {
   try {
@@ -572,11 +644,25 @@ const saveResponse = (didRebuild) => {
     label: faceData.profile.label,
     answers: answers,
     didRebuild: didRebuild,
+    feedbackEmoji: null,
+    feedbackText: "",
   };
   const updated = [...allResponses, response];
   setAllResponses(updated);
   localStorage.setItem("howYouSeeMe_responses", JSON.stringify(updated));
   return response;
+};
+
+const saveFeedback = () => {
+  const updated = [...allResponses];
+  if (updated.length > 0) {
+    updated[updated.length - 1].feedbackEmoji = feedbackEmoji;
+    updated[updated.length - 1].feedbackText = feedbackText;
+  }
+  setAllResponses(updated);
+  localStorage.setItem("howYouSeeMe_responses", JSON.stringify(updated));
+  // Send to Google Sheets
+  sendToSheets(updated[updated.length - 1]);
 };
 
   const handleAnswer = val => { const na=[...answers]; na[currentQ]=val; setAnswers(na); };
@@ -594,7 +680,7 @@ const saveResponse = (didRebuild) => {
     }
   };
   const goBack = () => { if(currentQ>0) setCurrentQ(currentQ-1); };
-  const startOver = () => { setStage("intro");setCurrentQ(0);setAnswers([]);setFaceData(null);setShowAssumptions(false); };
+  const startOver = () => { setStage("intro");setCurrentQ(0);setAnswers([]);setFaceData(null);setShowAssumptions(false);setRebuiltParts({head:null,hair:null,eyes:null,nose:null,mouth:null});setSelectedPart(null);setShowCompare(false);setFeedbackEmoji(null);setFeedbackText(""); };
 
   return (
     <div style={{ minHeight:"100vh", background:C.bg, color:C.espresso, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",padding:"24px 20px 100px", position:"relative", overflow:"hidden" }}>
@@ -676,9 +762,8 @@ const saveResponse = (didRebuild) => {
           <p style={{...mono(13), color:C.red, marginBottom:28 }}>+ {faceData.genderLabel}</p>
           <div style={{ border:`2px solid ${C.espresso}22`, padding:20, margin:"0 auto 28px", maxWidth:360, background:faceData.palette.bg }}>
             <svg ref={svgRef} viewBox="0 0 500 500" style={{ width:"100%", maxWidth:320, height:"auto" }}>
-             {renderFace(faceData.palette, faceData.gender, faceData.region)}
+             {renderFace(faceData)}
             </svg>
-            <p style={{...mono(10), color:C.olive, marginTop:8 }}>[ your illustrations will go here ]</p>
           </div>
           {showAssumptions && (
             <div style={{ animation:"slideUp 0.6s cubic-bezier(0.16,1,0.3,1) both", marginBottom:36 }}>
@@ -697,7 +782,7 @@ const saveResponse = (didRebuild) => {
                   onMouseLeave={e=>e.currentTarget.style.background=C.red}>
                   Rebuild yourself
                 </button>
-                <button onClick={()=>{saveResponse(false);startOver();}}
+                <button onClick={()=>{saveResponse(false);setStage("feedback");}}
                  style={{...mono(14), letterSpacing:"2px", textTransform:"uppercase", background:"none", color:C.espresso, border:`2px solid ${C.espresso}`, padding:"16px 44px", cursor:"pointer", transition:"all 0.3s ease", marginLeft:12 }}
                  onMouseEnter={e=>{e.currentTarget.style.background=C.espresso;e.currentTarget.style.color=C.bg;}}
                  onMouseLeave={e=>{e.currentTarget.style.background="none";e.currentTarget.style.color=C.espresso;}}>
@@ -709,24 +794,241 @@ const saveResponse = (didRebuild) => {
       )}
 
       {/* ═══ REASSEMBLE ═══ */}
-      {stage==="reassemble" && faceData && (
-        <div style={{ textAlign:"center", maxWidth:650, width:"100%", zIndex:1, animation:"slideUp 0.6s cubic-bezier(0.16,1,0.3,1) both" }}>
+      {stage==="reassemble" && faceData && !showCompare && (
+        <div style={{ textAlign:"center", maxWidth:750, width:"100%", zIndex:1, animation:"slideUp 0.6s cubic-bezier(0.16,1,0.3,1) both" }}>
           <h2 style={{...display("clamp(28px,5vw,40px)"), marginBottom:8 }}>Now, who are you<span style={{color:C.sun}}>?</span></h2>
-          <p style={{...mono(13), color:C.olive, marginBottom:28 }}>Drag the pieces. Arrange them your way.</p>
-          <div style={{ border:`2px solid ${C.espresso}22`, padding:20, margin:"0 auto 28px", maxWidth:400, background:faceData.palette.bg, minHeight:360, display:"flex", alignItems:"center", justifyContent:"center" }}>
-            <p style={{...mono(12), color:C.olive }}>[ Drag-and-drop canvas ]<br/>[ Will activate with your illustrated face parts ]</p>
+          <p style={{...mono(13), color:C.olive, marginBottom:28 }}>
+            {selectedPart ? `Tap the canvas to place the ${selectedPart.type}` : "Pick a feature below, then tap the canvas to place it."}
+          </p>
+
+          {/* ── Face Canvas — click to place selected part ── */}
+          <div onClick={()=>{
+              if(selectedPart){
+                setRebuiltParts(p=>({...p,[selectedPart.type]:selectedPart.file}));
+                setSelectedPart(null);
+              }
+            }}
+            style={{ position:"relative", width:360, height:360, margin:"0 auto 28px",
+              border:`2px solid ${selectedPart ? C.sun : C.espresso+"22"}`,
+              background:faceData.palette.bg, overflow:"hidden",
+              cursor: selectedPart ? "copy" : "default",
+              transition:"border-color 0.2s ease", maxWidth:"85vw" }}>
+
+            {/* All placed parts stacked at full size — PNGs are 500×500 pre-positioned */}
+            {rebuiltParts.hair && <img src={`/images/faces/${rebuiltParts.hair}`} alt="hair"
+              style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", pointerEvents:"none", zIndex:0 }}/>}
+            {rebuiltParts.head && <img src={`/images/faces/${rebuiltParts.head}`} alt="head"
+              style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", pointerEvents:"none", zIndex:1 }}/>}
+            {rebuiltParts.eyes && <img src={`/images/faces/${rebuiltParts.eyes}`} alt="eyes"
+              style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", pointerEvents:"none", zIndex:2, transform:"scale(0.65)", transformOrigin:"center" }}/>}
+            {rebuiltParts.nose && <img src={`/images/faces/${rebuiltParts.nose}`} alt="nose"
+              style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", pointerEvents:"none", zIndex:2, transform:"scale(0.65)", transformOrigin:"center" }}/>}
+            {rebuiltParts.mouth && <img src={`/images/faces/${rebuiltParts.mouth}`} alt="mouth"
+              style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", pointerEvents:"none", zIndex:2, transform:"scale(0.65)", transformOrigin:"center" }}/>}
+
+            {/* Empty state */}
+            {!rebuiltParts.head && !rebuiltParts.hair && !rebuiltParts.eyes && !rebuiltParts.nose && !rebuiltParts.mouth && (
+              <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <p style={{...mono(12), color:`${C.espresso}33` }}>Start building your face</p>
+              </div>
+            )}
           </div>
-          <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
+
+          {/* ── Parts Palette ── */}
+          {[
+            { type:"head", label:"HEAD", items: ["na","me","ap","eu"].flatMap(r=>[1,2].map(n=>`head-${r}-${n}.png`)) },
+            { type:"hair", label:"HAIR", items: ["na","me","ap","eu"].flatMap(r=>[1,2].map(n=>`hair-${r}-${n}.png`)) },
+            { type:"eyes", label:"EYES", items: [1,2,3,4,5,6,7,8].map(n=>`eyes-${n}.png`) },
+            { type:"nose", label:"NOSE", items: [1,2,3,4,5,6,7,8].map(n=>`nose-${n}.png`) },
+            { type:"mouth", label:"MOUTH", items: [1,2,3,4,5,6,7,8].map(n=>`mouth-${n}.png`) },
+          ].map(group => (
+            <div key={group.type} style={{ marginBottom:16 }}>
+              <p style={{...mono(10), letterSpacing:"2px", textTransform:"uppercase", color:C.olive, marginBottom:8 }}>{group.label}</p>
+              <div style={{ display:"flex", gap:8, justifyContent:"center", flexWrap:"wrap" }}>
+                {group.items.map(file => {
+                  const isSelected = selectedPart?.file === file;
+                  const isPlaced = rebuiltParts[group.type] === file;
+                  return (
+                    <button key={file} onClick={()=>setSelectedPart(isSelected ? null : {type:group.type, file})}
+                      style={{
+                        width:64, height:64, padding:4, cursor:"pointer", transition:"all 0.2s ease",
+                        border: isSelected ? `3px solid ${C.red}` : isPlaced ? `2px solid ${C.sun}` : `1.5px solid ${C.espresso}22`,
+                        background: isSelected ? `${C.red}11` : isPlaced ? `${C.sun}11` : C.light,
+                        borderRadius:6, opacity: isPlaced && !isSelected ? 0.5 : 1,
+                        transform: isSelected ? "scale(1.1)" : "scale(1)",
+                      }}
+                      onMouseEnter={e=>{if(!isSelected)e.currentTarget.style.borderColor=C.red;}}
+                      onMouseLeave={e=>{if(!isSelected)e.currentTarget.style.borderColor=isPlaced?C.sun:`${C.espresso}22`;}}>
+                      <img src={`/images/faces/${file}`} alt={file} style={{ width:"100%", height:"100%", objectFit:"contain" }}/>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+
+          {/* ── Action Buttons ── */}
+          <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", marginTop:24 }}>
+            {rebuiltParts.eyes && rebuiltParts.nose && rebuiltParts.mouth && rebuiltParts.head && (
+              <button onClick={()=>setShowCompare(true)}
+                style={{...mono(12), letterSpacing:"1.5px", textTransform:"uppercase", background:C.red, color:C.bg, border:"none", padding:"14px 36px", cursor:"pointer", transition:"all 0.3s ease" }}
+                onMouseEnter={e=>e.currentTarget.style.background=C.espresso}
+                onMouseLeave={e=>e.currentTarget.style.background=C.red}>
+                Compare faces
+              </button>
+            )}
+            <button onClick={()=>setRebuiltParts({head:null,hair:null,eyes:null,nose:null,mouth:null})}
+              style={{...mono(12), letterSpacing:"1.5px", textTransform:"uppercase", background:"none", color:C.espresso, border:`2px solid ${C.espresso}33`, padding:"12px 28px", cursor:"pointer", transition:"all 0.3s ease" }}
+              onMouseEnter={e=>e.currentTarget.style.borderColor=C.espresso}
+              onMouseLeave={e=>e.currentTarget.style.borderColor=`${C.espresso}33`}>
+              Clear
+            </button>
             <button onClick={startOver}
-              style={{...mono(12), letterSpacing:"1.5px", textTransform:"uppercase", background:C.espresso, color:C.bg, border:`2px solid ${C.espresso}`, padding:"12px 28px", cursor:"pointer", transition:"all 0.3s ease" }}
-              onMouseEnter={e=>{e.currentTarget.style.background=C.red;e.currentTarget.style.borderColor=C.red;}}
-              onMouseLeave={e=>{e.currentTarget.style.background=C.espresso;e.currentTarget.style.borderColor=C.espresso;}}>
+              style={{...mono(12), letterSpacing:"1.5px", textTransform:"uppercase", background:"none", color:C.espresso, border:`2px solid ${C.espresso}33`, padding:"12px 28px", cursor:"pointer", transition:"all 0.3s ease" }}
+              onMouseEnter={e=>e.currentTarget.style.borderColor=C.espresso}
+              onMouseLeave={e=>e.currentTarget.style.borderColor=`${C.espresso}33`}>
               Start over
             </button>
           </div>
-          <p style={{...display(16), color:C.olive, margin:"40px auto 0", maxWidth:440, lineHeight:1.5, fontStyle:"italic" }}>
+
+          <p style={{...display(16), color:C.olive, margin:"36px auto 0", maxWidth:440, lineHeight:1.5, fontStyle:"italic" }}>
             Identity is not what others project onto you.<br/>It's what you choose to assemble.
           </p>
+        </div>
+      )}
+
+      {/* ═══ COMPARE ═══ */}
+      {stage==="reassemble" && showCompare && faceData && (
+        <div ref={compareRef} style={{ textAlign:"center", maxWidth:800, width:"100%", zIndex:1, animation:"slideUp 0.6s cubic-bezier(0.16,1,0.3,1) both" }}>
+          <h2 style={{...display("clamp(24px,4vw,36px)"), marginBottom:8 }}>The system's face <span style={{color:C.red}}>vs</span> yours</h2>
+          <p style={{...mono(12), color:C.olive, marginBottom:32 }}>Left: how they saw you. Right: how you see yourself.</p>
+
+          <div style={{ display:"flex", gap:24, justifyContent:"center", flexWrap:"wrap", marginBottom:32 }}>
+            {/* Stereotype face */}
+            <div style={{ textAlign:"center" }}>
+              <p style={{...mono(10), letterSpacing:"2px", textTransform:"uppercase", color:C.red, marginBottom:8 }}>Their version</p>
+              <div style={{ width:280, height:280, position:"relative", border:`2px solid ${C.espresso}22`, background:faceData.palette.bg, padding:10 }}>
+                <svg viewBox="0 0 500 500" style={{ width:"100%", height:"100%" }}>
+                  {renderFace(faceData)}
+                </svg>
+              </div>
+              <p style={{...mono(11), color:C.espresso, marginTop:8 }}>"{faceData.profile.label}"</p>
+            </div>
+
+            {/* User's rebuilt face */}
+            <div style={{ textAlign:"center" }}>
+              <p style={{...mono(10), letterSpacing:"2px", textTransform:"uppercase", color:C.sun, marginBottom:8 }}>Your version</p>
+              <div style={{ width:280, height:280, position:"relative", border:`2px solid ${C.espresso}22`, background:faceData.palette.bg, overflow:"hidden" }}>
+                {rebuiltParts.hair && <img src={`/images/faces/${rebuiltParts.hair}`} alt="hair"
+                  style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", zIndex:0 }}/>}
+                {rebuiltParts.head && <img src={`/images/faces/${rebuiltParts.head}`} alt="head"
+                  style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", zIndex:1 }}/>}
+                {rebuiltParts.eyes && <img src={`/images/faces/${rebuiltParts.eyes}`} alt="eyes"
+                  style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", zIndex:2, transform:"scale(0.65)", transformOrigin:"center" }}/>}
+                {rebuiltParts.nose && <img src={`/images/faces/${rebuiltParts.nose}`} alt="nose"
+                  style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", zIndex:2, transform:"scale(0.65)", transformOrigin:"center" }}/>}
+                {rebuiltParts.mouth && <img src={`/images/faces/${rebuiltParts.mouth}`} alt="mouth"
+                  style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", zIndex:2, transform:"scale(0.65)", transformOrigin:"center" }}/>}
+              </div>
+              <p style={{...mono(11), color:C.espresso, marginTop:8 }}>Your own face</p>
+            </div>
+          </div>
+
+          {/* ── Action Buttons ── */}
+          <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
+            <button onClick={()=>setShowCompare(false)}
+              style={{...mono(12), letterSpacing:"1.5px", textTransform:"uppercase", background:"none", color:C.espresso, border:`2px solid ${C.espresso}`, padding:"14px 32px", cursor:"pointer", transition:"all 0.3s ease" }}
+              onMouseEnter={e=>{e.currentTarget.style.background=C.espresso;e.currentTarget.style.color=C.bg;}}
+              onMouseLeave={e=>{e.currentTarget.style.background="none";e.currentTarget.style.color=C.espresso;}}>
+              ← Edit face
+            </button>
+            <button onClick={()=>setStage("feedback")}
+              style={{...mono(12), letterSpacing:"1.5px", textTransform:"uppercase", background:C.red, color:C.bg, border:"none", padding:"14px 32px", cursor:"pointer", transition:"all 0.3s ease" }}
+              onMouseEnter={e=>e.currentTarget.style.background=C.espresso}
+              onMouseLeave={e=>e.currentTarget.style.background=C.red}>
+              Done — leave feedback
+            </button>
+          </div>
+
+          <p style={{...display(16), color:C.olive, margin:"36px auto 0", maxWidth:440, lineHeight:1.5, fontStyle:"italic" }}>
+            Identity is not what others project onto you.<br/>It's what you choose to assemble.
+          </p>
+        </div>
+      )}
+
+      {/* ═══ FEEDBACK ═══ */}
+      {stage==="feedback" && (
+        <div style={{ textAlign:"center", maxWidth:500, width:"100%", zIndex:1, animation:"slideUp 0.6s cubic-bezier(0.16,1,0.3,1) both", padding:"0 20px" }}>
+          <h2 style={{...display("clamp(24px,5vw,36px)"), marginBottom:8 }}>How did that feel<span style={{color:C.sun}}>?</span></h2>
+          <p style={{...mono(13), color:C.olive, marginBottom:32 }}>Your identity was profiled by a system. We'd love to hear your thoughts.</p>
+
+          {/* Emoji reactions */}
+          <div style={{ display:"flex", gap:16, justifyContent:"center", marginBottom:32 }}>
+            {[
+              { emoji:"😠", label:"Upset" },
+              { emoji:"😕", label:"Uneasy" },
+              { emoji:"🤔", label:"Thoughtful" },
+              { emoji:"😮", label:"Surprised" },
+              { emoji:"😊", label:"Amused" },
+            ].map(r => (
+              <button key={r.emoji} onClick={()=>setFeedbackEmoji(r.emoji)}
+                style={{
+                  display:"flex", flexDirection:"column", alignItems:"center", gap:6,
+                  background:"none", border: feedbackEmoji===r.emoji ? `2px solid ${C.red}` : `2px solid transparent`,
+                  borderRadius:12, padding:"12px 10px", cursor:"pointer", transition:"all 0.2s ease",
+                  transform: feedbackEmoji===r.emoji ? "scale(1.15)" : "scale(1)",
+                }}
+                onMouseEnter={e=>e.currentTarget.style.transform="scale(1.1)"}
+                onMouseLeave={e=>e.currentTarget.style.transform=feedbackEmoji===r.emoji?"scale(1.15)":"scale(1)"}>
+                <span style={{ fontSize:36 }}>{r.emoji}</span>
+                <span style={{...mono(10), color:C.espresso }}>{r.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Text input */}
+          <textarea
+            value={feedbackText}
+            onChange={e=>setFeedbackText(e.target.value)}
+            placeholder="Share your thoughts... (optional)"
+            style={{
+              ...mono(14), width:"100%", minHeight:100, padding:16,
+              background:C.light, border:`1.5px solid ${C.espresso}22`, borderRadius:4,
+              color:C.espresso, resize:"vertical", outline:"none",
+              transition:"border-color 0.2s ease",
+            }}
+            onFocus={e=>e.target.style.borderColor=C.red}
+            onBlur={e=>e.target.style.borderColor=`${C.espresso}22`}
+          />
+
+          {/* Submit */}
+          <div style={{ display:"flex", gap:12, justifyContent:"center", marginTop:24 }}>
+            <button onClick={()=>{saveFeedback();setStage("thankyou");}}
+              style={{...mono(14), letterSpacing:"2px", textTransform:"uppercase", background:C.red, color:C.bg, border:"none", padding:"16px 44px", cursor:"pointer", transition:"all 0.3s ease" }}
+              onMouseEnter={e=>e.currentTarget.style.background=C.espresso}
+              onMouseLeave={e=>e.currentTarget.style.background=C.red}>
+              {feedbackEmoji || feedbackText ? "Submit" : "Skip"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ THANK YOU ═══ */}
+      {stage==="thankyou" && (
+        <div style={{ textAlign:"center", maxWidth:500, width:"100%", zIndex:1, animation:"slideUp 0.8s cubic-bezier(0.16,1,0.3,1) both" }}>
+          <h2 style={{...display("clamp(28px,5vw,42px)"), marginBottom:16 }}>Thank you<span style={{color:C.sun}}>.</span></h2>
+          <p style={{...display(18), color:C.olive, marginBottom:12, fontStyle:"italic", lineHeight:1.5 }}>
+            Identity is not what others project onto you.<br/>It's what you choose to assemble.
+          </p>
+          <p style={{...mono(13), color:C.espresso, marginBottom:40, opacity:0.6 }}>
+            — The Agora Project by Mega Mario
+          </p>
+          <button onClick={startOver}
+            style={{...mono(14), letterSpacing:"2px", textTransform:"uppercase", background:"none", color:C.espresso, border:`2px solid ${C.espresso}`, padding:"16px 44px", cursor:"pointer", transition:"all 0.3s ease" }}
+            onMouseEnter={e=>{e.currentTarget.style.background=C.espresso;e.currentTarget.style.color=C.bg;}}
+            onMouseLeave={e=>{e.currentTarget.style.background="none";e.currentTarget.style.color=C.espresso;}}>
+            Start a new session
+          </button>
         </div>
       )}
 
@@ -743,19 +1045,36 @@ const saveResponse = (didRebuild) => {
 
 {/* ═══ STATS PANEL ═══ */}
 {showStats && (
-  <div style={{position:"fixed", inset:0, background:`${C.bg}ee`, zIndex:100, overflow:"auto", padding:40, display:"flex", flexDirection:"column", alignItems:"center"}}>
+  <div style={{position:"fixed", inset:0, background:`${C.bg}ee`, zIndex:100, overflow:"auto", padding:"40px 20px", display:"flex", flexDirection:"column", alignItems:"center"}}>
     <button onClick={()=>setShowStats(false)} style={{position:"fixed", top:16, right:16, ...mono(14), background:"none", border:"none", cursor:"pointer", color:C.espresso}}>✕ Close</button>
     <h2 style={{...display(32), marginBottom:8}}>Response Wall</h2>
     <p style={{...mono(14), color:C.espresso, marginBottom:8}}>{allResponses.length} people were profiled.</p>
-    <p style={{...mono(14), color:C.red, marginBottom:32}}>
+    <p style={{...mono(14), color:C.red, marginBottom:12}}>
       {allResponses.filter(r=>r.didRebuild).length} chose to rebuild. {allResponses.filter(r=>!r.didRebuild).length} accepted the system's face.
     </p>
+    {/* Export CSV button */}
+    <button onClick={()=>{
+      const headers = "timestamp,region,label,gender,didRebuild,feedbackEmoji,feedbackText\n";
+      const rows = allResponses.map(r =>
+        `${r.timestamp},${r.region},"${r.label}",${r.gender},${r.didRebuild},${r.feedbackEmoji||""},${(r.feedbackText||"").replace(/"/g,'""')}`
+      ).join("\n");
+      const blob = new Blob([headers+rows], {type:"text/csv"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `agora-responses-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+    }}
+      style={{...mono(11), letterSpacing:"1px", textTransform:"uppercase", background:C.espresso, color:C.bg, border:"none", padding:"10px 24px", cursor:"pointer", marginBottom:24, borderRadius:4}}>
+      Export CSV
+    </button>
     <div style={{display:"flex", flexWrap:"wrap", gap:16, justifyContent:"center", maxWidth:900}}>
       {allResponses.map((r,i) => (
         <div key={r.id} style={{border:`1.5px solid ${r.didRebuild ? C.red : C.espresso}33`, padding:12, width:160, textAlign:"center", background:r.didRebuild ? `${C.red}08` : `${C.espresso}05`}}>
           <p style={{...mono(10), color:C.espresso, marginBottom:4}}>{r.region}</p>
           <p style={{...display(12), marginBottom:4}}>"{r.label}"</p>
           <p style={{...mono(9), color:r.didRebuild ? C.red : C.sage}}>{r.didRebuild ? "REBUILT" : "ACCEPTED"}</p>
+          {r.feedbackEmoji && <p style={{fontSize:18, marginTop:4}}>{r.feedbackEmoji}</p>}
+          {r.feedbackText && <p style={{...mono(8), color:C.espresso, opacity:0.6, marginTop:4, fontStyle:"italic"}}>"{r.feedbackText.slice(0,50)}{r.feedbackText.length>50?"...":""}"</p>}
           <p style={{...mono(8), color:C.espresso, opacity:0.4, marginTop:4}}>{r.gender}</p>
         </div>
       ))}
@@ -769,6 +1088,12 @@ const saveResponse = (didRebuild) => {
         *{box-sizing:border-box;margin:0;padding:0;}
         button:focus-visible{outline:2px solid ${C.red};outline-offset:3px;}
         ::selection{background:${C.sun};color:${C.espresso};}
+        html{-webkit-text-size-adjust:100%;}
+        textarea{font-family:'Source Code Pro','Courier New',monospace;}
+        @media(max-width:600px){
+          .face-canvas{width:85vw!important;height:85vw!important;}
+          .palette-btn{width:48px!important;height:48px!important;}
+        }
       `}</style>
     </div>
   );
