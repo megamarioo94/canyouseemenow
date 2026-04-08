@@ -612,16 +612,30 @@ export default function WhoAmI() {
   // ═══ Google Sheets Integration ═══
   // INSTRUCTIONS: Create a Google Sheet, go to Extensions > Apps Script,
   // paste the script from google-sheets-script.gs, deploy as web app, paste URL below.
-  const SHEETS_URL = "https://script.google.com/a/macros/mylasalle.edu.sg/s/AKfycbwjJKDZV3Ep5dY7Z1glucO6o5BIM-3e70NzAEv5gc4gmiToaQ_JFMTIixNpfZJpiO7E/exec"; // ← paste your Google Apps Script URL here
+  const SHEETS_URL = "https://script.google.com/a/macros/mylasalle.edu.sg/s/AKfycbwUIZ0kDEz-10zYlTDuQTFOmNmW3fpUHot_7DTmVNh1CeBrD1muqdQXDmrJ1N-yeDP0/exec";
 
   const sendToSheets = async (data) => {
     if (!SHEETS_URL) return;
     try {
-      await fetch(SHEETS_URL, {
-        method: "POST", mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      // Use form submission for reliable cross-origin posting
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = SHEETS_URL;
+      form.target = "_blank";
+      form.style.display = "none";
+      const input = document.createElement("input");
+      input.name = "data";
+      input.value = JSON.stringify(data);
+      form.appendChild(input);
+      document.body.appendChild(form);
+      // Use iframe to prevent page navigation
+      const iframe = document.createElement("iframe");
+      iframe.name = "sheets_target";
+      iframe.style.display = "none";
+      document.body.appendChild(iframe);
+      form.target = "sheets_target";
+      form.submit();
+      setTimeout(() => { form.remove(); iframe.remove(); }, 5000);
     } catch(e) { console.log("Sheets sync failed:", e); }
   };
   // Load saved responses on mount
