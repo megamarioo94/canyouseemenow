@@ -328,28 +328,32 @@ function LayoutMapList({ q, onAnswer, selected }) {
   );
 }
 
-/* Q2: Food — responsive grid with images */
+/* Q2: Food — image + responsive button grid */
 function LayoutFoodSingle({ q, onAnswer, selected }) {
   return (
-    <div style={{ maxWidth:500, margin:"0 auto", display:"flex", flexWrap:"wrap", gap:10, justifyContent:"center" }}>
-      {q.options.map((opt,i) => (
-        <button key={i} onClick={()=>onAnswer(opt.value)}
-          style={{
-            ...mono(11), whiteSpace:"pre-line", textAlign:"center",
-            padding:"14px 18px", cursor:"pointer", lineHeight:1.4,
-            width:"clamp(140px,42vw,180px)",
-            background: selected===opt.value ? C.red : `${opt.color}cc`,
-            color: selected===opt.value ? C.bg : C.espresso,
-            border: selected===opt.value ? `2px solid ${C.red}` : `1.5px solid ${C.espresso}22`,
-            boxShadow: selected===opt.value ? `3px 3px 0 ${C.espresso}` : "none",
-            transition:"all 0.3s ease",
-            animation:`slideUp 0.4s ease ${i*80}ms both`,
-          }}
-          onMouseEnter={e=>{if(selected!==opt.value){e.currentTarget.style.borderColor=C.red;e.currentTarget.style.transform="translateY(-3px)";}}}
-          onMouseLeave={e=>{if(selected!==opt.value){e.currentTarget.style.borderColor=`${C.espresso}22`;e.currentTarget.style.transform="translateY(0)";}}}>
-          {opt.label}
-        </button>
-      ))}
+    <div style={{ maxWidth:500, margin:"0 auto" }}>
+      {q.bgImage && <img src={q.bgImage} alt="comfort food" style={{ width:"100%", maxWidth:400, height:"auto", display:"block", margin:"0 auto 16px" }}
+        onError={e=>{e.target.style.display="none";}} />}
+      <div style={{ display:"flex", flexWrap:"wrap", gap:10, justifyContent:"center" }}>
+        {q.options.map((opt,i) => (
+          <button key={i} onClick={()=>onAnswer(opt.value)}
+            style={{
+              ...mono(11), whiteSpace:"pre-line", textAlign:"center",
+              padding:"14px 18px", cursor:"pointer", lineHeight:1.4,
+              width:"clamp(140px,42vw,180px)",
+              background: selected===opt.value ? C.red : `${opt.color}cc`,
+              color: selected===opt.value ? C.bg : C.espresso,
+              border: selected===opt.value ? `2px solid ${C.red}` : `1.5px solid ${C.espresso}22`,
+              boxShadow: selected===opt.value ? `3px 3px 0 ${C.espresso}` : "none",
+              transition:"all 0.3s ease",
+              animation:`slideUp 0.4s ease ${i*80}ms both`,
+            }}
+            onMouseEnter={e=>{if(selected!==opt.value){e.currentTarget.style.borderColor=C.red;e.currentTarget.style.transform="translateY(-3px)";}}}
+            onMouseLeave={e=>{if(selected!==opt.value){e.currentTarget.style.borderColor=`${C.espresso}22`;e.currentTarget.style.transform="translateY(0)";}}}>
+            {opt.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -550,7 +554,7 @@ function LayoutLabelScatter({ q, onAnswer, selected }) {
             }}
             onMouseEnter={e=>e.currentTarget.style.transform="scale(1.08)"}
             onMouseLeave={e=>e.currentTarget.style.transform=sel?"scale(1.1)":"scale(1)"}>
-            <img src={opt.img} alt={opt.label} style={{ width:"clamp(80px,15vw,"+( opt.w||160)+"px)", height:"auto", display:"block" }}/>
+            <img src={opt.img} alt={opt.label} style={{ width:"clamp(100px,25vw,"+( opt.w||160)+"px)", height:"auto", display:"block" }}/>
             {sel && <div style={{ position:"absolute", inset:0, border:`3px solid ${C.red}`, borderRadius:4, pointerEvents:"none" }}/>}
           </button>
         );
