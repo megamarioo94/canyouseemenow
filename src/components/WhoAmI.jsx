@@ -210,12 +210,11 @@ function renderFace(faceData) {
   const base = "/images/faces/";
   const p = faceData.parts;
 
-  // Head & hair at full size; features scaled down to 50% centered
   return (
     <g>
       <image href={`${base}hair-${rc}-${hairNum}.png`} x={0} y={0} width={500} height={500} />
       <image href={`${base}head-${rc}-${headNum}.png`} x={0} y={0} width={500} height={500} />
-      <g style={{ transformOrigin:"250px 250px", transform:"scale(0.7)" }}>
+      <g style={{ transformOrigin:"250px 250px", transform:"scale(1.25)" }}>
         <image href={`${base}${p.eyes}`} x={0} y={0} width={500} height={500} />
         <image href={`${base}${p.nose}`} x={0} y={0} width={500} height={500} />
         <image href={`${base}${p.mouth}`} x={0} y={0} width={500} height={500} />
@@ -820,11 +819,11 @@ const saveFeedback = () => {
             {rebuiltParts.head && <img src={`/images/faces/${rebuiltParts.head}`} alt="head"
               style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", pointerEvents:"none", zIndex:1 }}/>}
             {rebuiltParts.eyes && <img src={`/images/faces/${rebuiltParts.eyes}`} alt="eyes"
-              style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", pointerEvents:"none", zIndex:2, transform:"scale(0.65)", transformOrigin:"center" }}/>}
+              style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", pointerEvents:"none", zIndex:2, transform:"scale(1.25)", transformOrigin:"center" }}/>}
             {rebuiltParts.nose && <img src={`/images/faces/${rebuiltParts.nose}`} alt="nose"
-              style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", pointerEvents:"none", zIndex:2, transform:"scale(0.65)", transformOrigin:"center" }}/>}
+              style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", pointerEvents:"none", zIndex:2, transform:"scale(1.25)", transformOrigin:"center" }}/>}
             {rebuiltParts.mouth && <img src={`/images/faces/${rebuiltParts.mouth}`} alt="mouth"
-              style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", pointerEvents:"none", zIndex:2, transform:"scale(0.65)", transformOrigin:"center" }}/>}
+              style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", pointerEvents:"none", zIndex:2, transform:"scale(1.25)", transformOrigin:"center" }}/>}
 
             {/* Empty state */}
             {!rebuiltParts.head && !rebuiltParts.hair && !rebuiltParts.eyes && !rebuiltParts.nose && !rebuiltParts.mouth && (
@@ -924,11 +923,11 @@ const saveFeedback = () => {
                 {rebuiltParts.head && <img src={`/images/faces/${rebuiltParts.head}`} alt="head"
                   style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", zIndex:1 }}/>}
                 {rebuiltParts.eyes && <img src={`/images/faces/${rebuiltParts.eyes}`} alt="eyes"
-                  style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", zIndex:2, transform:"scale(0.65)", transformOrigin:"center" }}/>}
+                  style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", zIndex:2, transform:"scale(1.25)", transformOrigin:"center" }}/>}
                 {rebuiltParts.nose && <img src={`/images/faces/${rebuiltParts.nose}`} alt="nose"
-                  style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", zIndex:2, transform:"scale(0.65)", transformOrigin:"center" }}/>}
+                  style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", zIndex:2, transform:"scale(1.25)", transformOrigin:"center" }}/>}
                 {rebuiltParts.mouth && <img src={`/images/faces/${rebuiltParts.mouth}`} alt="mouth"
-                  style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", zIndex:2, transform:"scale(0.65)", transformOrigin:"center" }}/>}
+                  style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", zIndex:2, transform:"scale(1.25)", transformOrigin:"center" }}/>}
               </div>
               <p style={{...mono(11), color:C.espresso, marginTop:8 }}>Your own face</p>
             </div>
