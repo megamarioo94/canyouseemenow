@@ -550,7 +550,7 @@ function LayoutLabelScatter({ q, onAnswer, selected }) {
             }}
             onMouseEnter={e=>e.currentTarget.style.transform="scale(1.08)"}
             onMouseLeave={e=>e.currentTarget.style.transform=sel?"scale(1.1)":"scale(1)"}>
-            <img src={opt.img} alt={opt.label} style={{ width:"clamp(100px,25vw,"+( opt.w||160)+"px)", height:"auto", display:"block" }}/>
+            <img src={opt.img} alt={opt.label} style={{ width:"clamp(80px,15vw,"+( opt.w||160)+"px)", height:"auto", display:"block" }}/>
             {sel && <div style={{ position:"absolute", inset:0, border:`3px solid ${C.red}`, borderRadius:4, pointerEvents:"none" }}/>}
           </button>
         );
