@@ -328,27 +328,17 @@ function LayoutMapList({ q, onAnswer, selected }) {
   );
 }
 
-/* Q2: Food — single big image with button overlay */
+/* Q2: Food — responsive grid with images */
 function LayoutFoodSingle({ q, onAnswer, selected }) {
-  const labelPositions = [
-    { top:"41%", left:"17%", color:C.sun },
-    { top:"41%", left:"42%", color:C.cream },
-    { top:"41%", left:"65%", color:C.sage },
-    { top:"81%", left:"25%", color:C.ocean },
-    { top:"81%", left:"54%", color:C.cocoa },
-  ];
   return (
-    <div style={{ position:"relative", maxWidth:700, margin:"0 auto" }}>
-      <img src={q.bgImage} alt="comfort food" style={{ width:"100%", height:"auto", display:"block" }}
-        onError={e=>{e.target.style.display="none";}} />
+    <div style={{ maxWidth:500, margin:"0 auto", display:"flex", flexWrap:"wrap", gap:10, justifyContent:"center" }}>
       {q.options.map((opt,i) => (
         <button key={i} onClick={()=>onAnswer(opt.value)}
           style={{
-            ...mono(11), position:"absolute",
-            top:labelPositions[i].top, left:labelPositions[i].left,
-            whiteSpace:"pre-line", textAlign:"center",
-            padding:"6px 14px", cursor:"pointer", lineHeight:1.4,
-            background: selected===opt.value ? C.red : `${labelPositions[i].color}cc`,
+            ...mono(11), whiteSpace:"pre-line", textAlign:"center",
+            padding:"14px 18px", cursor:"pointer", lineHeight:1.4,
+            width:"clamp(140px,42vw,180px)",
+            background: selected===opt.value ? C.red : `${opt.color}cc`,
             color: selected===opt.value ? C.bg : C.espresso,
             border: selected===opt.value ? `2px solid ${C.red}` : `1.5px solid ${C.espresso}22`,
             boxShadow: selected===opt.value ? `3px 3px 0 ${C.espresso}` : "none",
@@ -367,21 +357,19 @@ function LayoutFoodSingle({ q, onAnswer, selected }) {
 /* Q3: Scattered wardrobe — with real images */
 function LayoutScattered({ q, onAnswer, selected }) {
   return (
-    <div style={{ display:"flex", gap:12, justifyContent:"center", alignItems:"flex-start", flexWrap:"wrap", maxWidth:800, margin:"0 auto" }}>
+    <div style={{ display:"flex", gap:8, justifyContent:"center", alignItems:"flex-start", flexWrap:"wrap", maxWidth:800, margin:"0 auto", padding:"0 8px" }}>
       {q.options.map((opt,i) => {
-        const offsets = [0, 20, -10, 15, -5];
         return (
           <button key={i} onClick={()=>onAnswer(opt.value)}
             style={{
               background:"none", border:"none", cursor:"pointer",
               display:"flex", flexDirection:"column", alignItems:"center", gap:6,
-              marginTop: offsets[i],
               transition:"transform 0.3s ease", animation:`slideUp 0.5s ease ${i*80}ms both`,
             }}
             onMouseEnter={e=>e.currentTarget.style.transform="scale(1.05)"}
             onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}>
             <div style={{
-              width:140, height:180, overflow:"hidden", borderRadius:4,
+              width:"clamp(90px,22vw,140px)", height:"clamp(120px,28vw,180px)", overflow:"hidden", borderRadius:4,
               border: selected===opt.value ? `3px solid ${C.red}` : `1.5px solid ${C.espresso}22`,
               background: `${opt.color}15`,
             }}>
@@ -419,7 +407,7 @@ function LayoutCardRow({ q, onAnswer, selected }) {
           }}
           onMouseEnter={e=>e.currentTarget.style.transform="translateY(-4px)"}
           onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
-          <div style={{ width:"100%", height:157, background:`${opt.color}22`, display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <div style={{ width:"100%", height:"clamp(100px,22vw,157px)", background:`${opt.color}22`, display:"flex", alignItems:"center", justifyContent:"center" }}>
             {opt.img ? <img src={opt.img} alt={opt.label} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> :
               <span style={{...mono(9),color:`${C.espresso}44`}}>[ img ]</span>}
           </div>
@@ -467,9 +455,9 @@ function LayoutToggleList({ q, onAnswer, selected }) {
           </button>
         ))}
       </div>
-      <div style={{ flexShrink:0, maxWidth:200 }}>
+      <div style={{ flexShrink:0 }}>
         {q.sideImage ?
-          <img src={q.sideImage} alt="flip phone" style={{ width:200, height:"auto", display:"block" }}/> :
+          <img src={q.sideImage} alt="flip phone" style={{ width:"clamp(100px,20vw,200px)", height:"auto", display:"block" }}/> :
           <Img w={180} h={280} alt="phone"/>}
       </div>
     </div>
@@ -545,20 +533,15 @@ function LayoutHexagons({ q, onAnswer, selected }) {
   );
 }
 
-/* Q8: Label Scatter */
+/* Q8: Label Scatter — responsive flex */
 function LayoutLabelScatter({ q, onAnswer, selected }) {
-  const positions = [
-    { top:0, left:"3%" }, { top:-17, left:"39%" }, { top:10, left:"65%" },
-    { top:168, left:"12%" }, { top:160, left:"58%" },
-  ];
   return (
-    <div style={{ position:"relative", minHeight:320, maxWidth:700, margin:"0 auto", width:"100%" }}>
+    <div style={{ display:"flex", flexWrap:"wrap", gap:12, justifyContent:"center", maxWidth:700, margin:"0 auto", padding:"0 8px" }}>
       {q.options.map((opt,i) => {
         const sel = selected===opt.value;
         return (
           <button key={i} onClick={()=>onAnswer(opt.value)}
             style={{
-              position:"absolute", top:positions[i].top+20, left:positions[i].left,
               background:"none", border:"none", cursor:"pointer", padding:0,
               transition:"all 0.3s ease",
               animation:`slideUp 0.5s ease ${i*100}ms both`,
@@ -567,7 +550,7 @@ function LayoutLabelScatter({ q, onAnswer, selected }) {
             }}
             onMouseEnter={e=>e.currentTarget.style.transform="scale(1.08)"}
             onMouseLeave={e=>e.currentTarget.style.transform=sel?"scale(1.1)":"scale(1)"}>
-            <img src={opt.img} alt={opt.label} style={{ width:opt.w||160, height:"auto", display:"block" }}/>
+            <img src={opt.img} alt={opt.label} style={{ width:"clamp(100px,25vw,"+( opt.w||160)+"px)", height:"auto", display:"block" }}/>
             {sel && <div style={{ position:"absolute", inset:0, border:`3px solid ${C.red}`, borderRadius:4, pointerEvents:"none" }}/>}
           </button>
         );
@@ -731,7 +714,7 @@ const saveFeedback = () => {
 
       {/* ═══ QUIZ ═══ */}
       {stage==="quiz" && (
-        <div style={{ textAlign:"center", maxWidth:800, width:"100%", zIndex:1, animation:"slideUp 0.5s cubic-bezier(0.16,1,0.3,1) both" }} key={currentQ}>
+        <div style={{ textAlign:"center", maxWidth:800, width:"100%", zIndex:1, animation:"slideUp 0.5s cubic-bezier(0.16,1,0.3,1) both", padding:"0 8px" }} key={currentQ}>
           <ProgressBar current={currentQ} total={questions.length}/>
           <h2 style={{...display("clamp(28px,5vw,44px)"), marginBottom:40 }}>
             {questions[currentQ].question}
