@@ -261,7 +261,7 @@ function NavArrows({ onBack, onForward, showBack, showForward }) {
           width:52, height:52, borderRadius:"50%", border:"none",
           background:C.red, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
           justifyContent:"center", transition:"all 0.3s ease", position:"fixed",
-          bottom:-100, left:20, zIndex:10,
+          bottom:30, left:20, zIndex:10,
         }}
           onMouseEnter={e=>{e.currentTarget.style.background=C.espresso;e.currentTarget.style.transform="scale(1.08)";}}
           onMouseLeave={e=>{e.currentTarget.style.background=C.red;e.currentTarget.style.transform="scale(1)";}}>
@@ -276,7 +276,7 @@ function NavArrows({ onBack, onForward, showBack, showForward }) {
           width:52, height:52, borderRadius:"50%", border:`2px solid ${C.espresso}33`,
           background:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
           justifyContent:"center", transition:"all 0.3s ease", position:"fixed",
-          bottom:-100, right:20, zIndex:10,
+          bottom:30, right:20, zIndex:10,
         }}
           onMouseEnter={e=>{e.currentTarget.style.borderColor=C.olive;e.currentTarget.style.transform="scale(1.08)";}}
           onMouseLeave={e=>{e.currentTarget.style.borderColor=`${C.espresso}33`;e.currentTarget.style.transform="scale(1)";}}>
@@ -408,12 +408,12 @@ function LayoutScattered({ q, onAnswer, selected }) {
 /* Q4: Card Row */
 function LayoutCardRow({ q, onAnswer, selected }) {
   return (
-    <div style={{ display:"flex", gap:14, justifyContent:"center", flexWrap:"nowrap" }}>
+    <div style={{ display:"flex", gap:14, justifyContent:"center", flexWrap:"wrap" }}>
       {q.options.map((opt,i) => (
         <button key={i} onClick={()=>onAnswer(opt.value)}
           style={{
             background:"none", border: selected===opt.value ? `2.5px solid ${C.red}` : `1.5px solid ${C.espresso}33`,
-            cursor:"pointer", width:130, padding:0, display:"flex", flexDirection:"column", justifyContent:"space-between", height:210,
+            cursor:"pointer", width:"clamp(100px,18vw,130px)", padding:0, display:"flex", flexDirection:"column", justifyContent:"space-between", height:"auto", minHeight:160,
             transition:"all 0.3s ease", animation:`slideUp 0.5s ease ${i*80}ms both`,
             boxShadow: selected===opt.value ? `4px 4px 0 ${C.red}` : "none",
           }}
@@ -447,7 +447,7 @@ function LayoutToggleList({ q, onAnswer, selected }) {
             style={{
               display:"flex", alignItems:"center", gap:16, background:"none",
               border:`1.5px solid ${selected===opt.value ? C.red : `${C.espresso}33`}`,
-              padding:"12px 24px", cursor:"pointer", minWidth:300, transition:"all 0.3s ease",
+              padding:"12px 24px", cursor:"pointer", minWidth:"clamp(240px,70vw,300px)", transition:"all 0.3s ease",
               animation:`slideUp 0.4s ease ${i*80}ms both`,
             }}
             onMouseEnter={e=>e.currentTarget.style.borderColor=C.red}
@@ -479,7 +479,7 @@ function LayoutToggleList({ q, onAnswer, selected }) {
 /* Q6: Folder Tabs with real images */
 function LayoutFolderTabs({ q, onAnswer, selected }) {
   return (
-    <div style={{ display:"flex", gap:8, justifyContent:"center", flexWrap:"nowrap", alignItems:"flex-end", maxWidth:850, margin:"0 auto"}}>
+    <div style={{ display:"flex", gap:8, justifyContent:"center", flexWrap:"wrap", alignItems:"flex-end", maxWidth:850, margin:"0 auto"}}>
       {q.options.map((opt,i) => (
         <button key={i} onClick={()=>onAnswer(opt.value)}
           style={{
@@ -490,7 +490,7 @@ function LayoutFolderTabs({ q, onAnswer, selected }) {
           onMouseEnter={e=>e.currentTarget.style.transform="translateY(-6px)"}
           onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
           <div style={{
-            width:160, height:170, overflow:"hidden",borderRadius:"6px 6px 0 0", border: "none", background:"transparent"}}>
+            width:"clamp(110px,22vw,160px)", height:"clamp(120px,24vw,170px)", overflow:"hidden",borderRadius:"6px 6px 0 0", border: "none", background:"transparent"}}>
             {opt.img ? <img src={opt.img} alt={opt.label} style={{ width:"100%", height:"100%", objectFit:"contain", objectPosition:"bottom" }}/> :
               <div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center"}}>
                 <span style={{...mono(9),color:`${C.espresso}44`}}>[ img ]</span>
@@ -498,7 +498,7 @@ function LayoutFolderTabs({ q, onAnswer, selected }) {
           </div>
           <div style={{
             ...mono(11), marginTop: 8,padding:"10px 8px", whiteSpace:"pre-line", textAlign:"center",
-            width:140, lineHeight:1.3,
+            width:"clamp(95px,20vw,140px)", lineHeight:1.3,
             background: selected===opt.value ? C.red : opt.color,
             color: selected===opt.value ? C.bg : (opt.color === C.red ? C.bg : C.espresso),
             border:`1.5px solid ${C.espresso}22`, borderTop:"none",
@@ -514,17 +514,17 @@ function LayoutFolderTabs({ q, onAnswer, selected }) {
 /* Q7: Hexagons with real images */
 function LayoutHexagons({ q, onAnswer, selected }) {
   const hexPositions = [
-    { x:-80, y:-10 }, { x:140, y:-10}, { x:357, y:-10 },
-    { x:33, y:165 }, { x:250, y:165 },
-];
+    { x:"0%", y:0 }, { x:"37%", y:0 }, { x:"74%", y:0 },
+    { x:"18%", y:"52%" }, { x:"55%", y:"52%" },
+  ];
   return (
-    <div style={{ position:"relative", width:500, height:340, overflow:"visible", margin:"0 auto" }}>
+    <div style={{ position:"relative", width:"100%", maxWidth:500, paddingBottom:"70%", overflow:"visible", margin:"0 auto" }}>
       {q.options.map((opt,i) => {
         const sel = selected===opt.value;
         return (
           <button key={i} onClick={()=>onAnswer(opt.value)}
             style={{
-              position:"absolute", left:hexPositions[i].x, top:hexPositions[i].y, width:230, height:230, padding:0, overflow:"hidden",
+              position:"absolute", left:hexPositions[i].x, top:hexPositions[i].y, width:"28%", height:0, paddingBottom:"28%", overflow:"hidden",
               background:C.bg,clipPath:"polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
               border:"none", cursor:"pointer", transition:"all 0.3s ease",
               animation:`slideUp 0.5s ease ${i*100}ms both`,
@@ -533,8 +533,8 @@ function LayoutHexagons({ q, onAnswer, selected }) {
             onMouseEnter={e=>{if(!sel)e.currentTarget.style.transform="scale(1.05)";}}
             onMouseLeave={e=>{if(!sel)e.currentTarget.style.transform="scale(1)";}}>
             {opt.img ?
-              <img src={opt.img} alt={opt.label} style={{ width:"100%", height:"100%", objectFit:"cover", filter:sel?"brightness(0.85)":"brightness(1)" }}/> :
-              <div style={{ width:"100%", height:"100%", background:"transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>
+              <img src={opt.img} alt={opt.label} style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", filter:sel?"brightness(0.85)":"brightness(1)" }}/> :
+              <div style={{ position:"absolute", inset:0, width:"100%", height:"100%", background:"transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>
                 <span style={{...mono(10),color:C.espresso,textAlign:"center",padding:8}}>[ {opt.label} ]</span>
               </div>}
             {sel && <div style={{ position:"absolute", inset:0, border:`4px solid ${C.red}`, clipPath:"polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)", pointerEvents:"none" }}/>}
@@ -617,26 +617,19 @@ export default function WhoAmI() {
   const sendToSheets = async (data) => {
     if (!SHEETS_URL) return;
     try {
-      // Use form submission for reliable cross-origin posting
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = SHEETS_URL;
-      form.target = "_blank";
-      form.style.display = "none";
-      const input = document.createElement("input");
-      input.name = "data";
-      input.value = JSON.stringify(data);
-      form.appendChild(input);
-      document.body.appendChild(form);
-      // Use iframe to prevent page navigation
-      const iframe = document.createElement("iframe");
-      iframe.name = "sheets_target";
-      iframe.style.display = "none";
-      document.body.appendChild(iframe);
-      form.target = "sheets_target";
-      form.submit();
-      setTimeout(() => { form.remove(); iframe.remove(); }, 5000);
-    } catch(e) { console.log("Sheets sync failed:", e); }
+      // Try fetch first
+      const res = await fetch(SHEETS_URL, {
+        method: "POST",
+        body: JSON.stringify(data),
+        mode: "no-cors",
+        keepalive: true,
+      });
+    } catch(e) {
+      // Fallback: sendBeacon (works even when page is closing)
+      try {
+        navigator.sendBeacon(SHEETS_URL, JSON.stringify(data));
+      } catch(e2) { console.log("Sheets sync failed:", e2); }
+    }
   };
   // Load saved responses on mount
 useEffect(() => {
@@ -696,7 +689,7 @@ const saveFeedback = () => {
   const startOver = () => { setStage("intro");setCurrentQ(0);setAnswers([]);setFaceData(null);setShowAssumptions(false);setRebuiltParts({head:null,hair:null,eyes:null,nose:null,mouth:null});setSelectedPart(null);setShowCompare(false);setFeedbackEmoji(null);setFeedbackText(""); };
 
   return (
-    <div style={{ minHeight:"100vh", background:C.bg, color:C.espresso, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",padding:"24px 20px 100px", position:"relative", overflow:"hidden" }}>
+    <div style={{ minHeight:"100vh", background:C.bg, color:C.espresso, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",padding:"24px 16px 100px", position:"relative", overflow:"hidden", width:"100%" }}>
 
       {/* Grain */}
       <div style={{ position:"fixed", inset:0, backgroundImage:`url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")`, pointerEvents:"none", zIndex:0 }}/>
@@ -773,8 +766,8 @@ const saveFeedback = () => {
           <p style={{...mono(11), letterSpacing:"3px", textTransform:"uppercase", color:C.olive, marginBottom:12 }}>The system sees you as</p>
           <h2 style={{...display("clamp(26px,5vw,38px)"), marginBottom:6 }}>"{faceData.profile.label}"</h2>
           <p style={{...mono(13), color:C.red, marginBottom:28 }}>+ {faceData.genderLabel}</p>
-          <div style={{ border:`2px solid ${C.espresso}22`, padding:20, margin:"0 auto 28px", maxWidth:360, background:faceData.palette.bg }}>
-            <svg ref={svgRef} viewBox="0 0 500 500" style={{ width:"100%", maxWidth:320, height:"auto" }}>
+          <div style={{ border:`2px solid ${C.espresso}22`, padding:20, margin:"0 auto 28px", maxWidth:360, width:"90%", background:faceData.palette.bg }}>
+            <svg ref={svgRef} viewBox="0 0 500 500" style={{ width:"100%", height:"auto" }}>
              {renderFace(faceData)}
             </svg>
           </div>
@@ -789,6 +782,7 @@ const saveFeedback = () => {
                 </p>)}
               <div style={{ marginTop:36 }}>
                 <p style={{...display(20), color:C.espresso, marginBottom:24 }}>This isn't you. Take the pieces back.</p>
+                <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
                 <button onClick={()=>{saveResponse(true);setShowAssumptions(false);setStage("reassemble");}}
                   style={{...mono(14), letterSpacing:"2px", textTransform:"uppercase", background:C.red, color:C.bg, border:"none", padding:"16px 44px", cursor:"pointer", transition:"all 0.3s ease" }}
                   onMouseEnter={e=>e.currentTarget.style.background=C.espresso}
@@ -796,11 +790,12 @@ const saveFeedback = () => {
                   Rebuild yourself
                 </button>
                 <button onClick={()=>{saveResponse(false);setStage("feedback");}}
-                 style={{...mono(14), letterSpacing:"2px", textTransform:"uppercase", background:"none", color:C.espresso, border:`2px solid ${C.espresso}`, padding:"16px 44px", cursor:"pointer", transition:"all 0.3s ease", marginLeft:12 }}
+                 style={{...mono(14), letterSpacing:"2px", textTransform:"uppercase", background:"none", color:C.espresso, border:`2px solid ${C.espresso}`, padding:"16px 44px", cursor:"pointer", transition:"all 0.3s ease" }}
                  onMouseEnter={e=>{e.currentTarget.style.background=C.espresso;e.currentTarget.style.color=C.bg;}}
                  onMouseLeave={e=>{e.currentTarget.style.background="none";e.currentTarget.style.color=C.espresso;}}>
                  Accept this face
                 </button>
+                </div>
               </div>
             </div>)}
         </div>
@@ -821,7 +816,7 @@ const saveFeedback = () => {
                 setSelectedPart(null);
               }
             }}
-            style={{ position:"relative", width:360, height:360, margin:"0 auto 28px",
+            style={{ position:"relative", width:"min(360px, 85vw)", height:"min(360px, 85vw)", margin:"0 auto 28px",
               border:`2px solid ${selectedPart ? C.sun : C.espresso+"22"}`,
               background:faceData.palette.bg, overflow:"hidden",
               cursor: selectedPart ? "copy" : "default",
@@ -857,14 +852,14 @@ const saveFeedback = () => {
           ].map(group => (
             <div key={group.type} style={{ marginBottom:16 }}>
               <p style={{...mono(10), letterSpacing:"2px", textTransform:"uppercase", color:C.olive, marginBottom:8 }}>{group.label}</p>
-              <div style={{ display:"flex", gap:8, justifyContent:"center", flexWrap:"wrap" }}>
+              <div style={{ display:"flex", gap:6, justifyContent:"center", flexWrap:"wrap", padding:"0 8px" }}>
                 {group.items.map(file => {
                   const isSelected = selectedPart?.file === file;
                   const isPlaced = rebuiltParts[group.type] === file;
                   return (
                     <button key={file} onClick={()=>setSelectedPart(isSelected ? null : {type:group.type, file})}
                       style={{
-                        width:64, height:64, padding:4, cursor:"pointer", transition:"all 0.2s ease",
+                        width:"clamp(48px,12vw,64px)", height:"clamp(48px,12vw,64px)", padding:4, cursor:"pointer", transition:"all 0.2s ease",
                         border: isSelected ? `3px solid ${C.red}` : isPlaced ? `2px solid ${C.sun}` : `1.5px solid ${C.espresso}22`,
                         background: isSelected ? `${C.red}11` : isPlaced ? `${C.sun}11` : C.light,
                         borderRadius:6, opacity: isPlaced && !isSelected ? 0.5 : 1,
@@ -920,7 +915,7 @@ const saveFeedback = () => {
             {/* Stereotype face */}
             <div style={{ textAlign:"center" }}>
               <p style={{...mono(10), letterSpacing:"2px", textTransform:"uppercase", color:C.red, marginBottom:8 }}>Their version</p>
-              <div style={{ width:280, height:280, position:"relative", border:`2px solid ${C.espresso}22`, background:faceData.palette.bg, padding:10 }}>
+              <div style={{ width:"min(280px,40vw)", height:"min(280px,40vw)", position:"relative", border:`2px solid ${C.espresso}22`, background:faceData.palette.bg, padding:10 }}>
                 <svg viewBox="0 0 500 500" style={{ width:"100%", height:"100%" }}>
                   {renderFace(faceData)}
                 </svg>
@@ -931,7 +926,7 @@ const saveFeedback = () => {
             {/* User's rebuilt face */}
             <div style={{ textAlign:"center" }}>
               <p style={{...mono(10), letterSpacing:"2px", textTransform:"uppercase", color:C.sun, marginBottom:8 }}>Your version</p>
-              <div style={{ width:280, height:280, position:"relative", border:`2px solid ${C.espresso}22`, background:faceData.palette.bg, overflow:"hidden" }}>
+              <div style={{ width:"min(280px,40vw)", height:"min(280px,40vw)", position:"relative", border:`2px solid ${C.espresso}22`, background:faceData.palette.bg, overflow:"hidden" }}>
                 {rebuiltParts.hair && <img src={`/images/faces/${rebuiltParts.hair}`} alt="hair"
                   style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", zIndex:0 }}/>}
                 {rebuiltParts.head && <img src={`/images/faces/${rebuiltParts.head}`} alt="head"
@@ -1101,11 +1096,12 @@ const saveFeedback = () => {
         *{box-sizing:border-box;margin:0;padding:0;}
         button:focus-visible{outline:2px solid ${C.red};outline-offset:3px;}
         ::selection{background:${C.sun};color:${C.espresso};}
-        html{-webkit-text-size-adjust:100%;}
+        html{-webkit-text-size-adjust:100%;overflow-x:hidden;}
+        body{overflow-x:hidden;}
         textarea{font-family:'Source Code Pro','Courier New',monospace;}
-        @media(max-width:600px){
-          .face-canvas{width:85vw!important;height:85vw!important;}
-          .palette-btn{width:48px!important;height:48px!important;}
+        img{max-width:100%;}
+        @media(max-width:480px){
+          button{-webkit-tap-highlight-color:transparent;}
         }
       `}</style>
     </div>
